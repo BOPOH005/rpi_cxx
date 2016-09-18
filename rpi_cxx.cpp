@@ -111,8 +111,14 @@ void sys_gpio::set_PUD(gpio::GPIOPin pin, PUD pud)
 
 void pinWrite(gpio::GPIOPin pin, GPIOLevel level)
 {
-	std::cout << "Меняем уровень " << pin << "=" << level << std::endl;
+	//std::cout << "Меняем уровень " << pin << "=" << level << std::endl;
 	digitalWrite(static_cast<int>(pin), static_cast<int>(level));
+}
+
+void pinPWMWrite(gpio::GPIOPin pin, int freq)
+{
+	pwmWrite(static_cast<int>(pin), freq);
+
 }
 
 }

@@ -26,7 +26,8 @@ void init_gpio(const cont_inout& inout, const cont_pud& pud)
 enum class GPIOPinMode
 {
 	modIN=INPUT,
-	modOUT=OUTPUT
+	modOUT=OUTPUT,
+	modPWM=PWM_OUTPUT
 };
 
 enum class PUD
@@ -49,6 +50,10 @@ public:
 		GPIO5,
 		GPIO6,
 		GPIO7,
+		SDA1,
+		SCL1,
+		CE0,
+		CE1,
 		GPIO21=21,
 		GPIO22,
 		GPIO23,
@@ -203,6 +208,7 @@ enum class GPIOLevel
 };
 
 void pinWrite(gpio::GPIOPin pin, GPIOLevel level);
+void pinPWMWrite(gpio::GPIOPin pin, int freq);
 
 };
 
