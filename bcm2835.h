@@ -58,9 +58,6 @@ struct GPIO_REGS
 		pin_fun FSEL8      : 3;
 		pin_fun FSEL9      : 3;
 		unsigned           : 2;
-	}		GPFSEL0;
-	struct 
-	{
 		pin_fun FSEL10      : 3;
 		pin_fun FSEL11      : 3;
 		pin_fun FSEL12      : 3;
@@ -72,9 +69,6 @@ struct GPIO_REGS
 		pin_fun FSEL18      : 3;
 		pin_fun FSEL19      : 3;
 		unsigned            : 2;
-	}		GPFSEL1;
-	struct 
-	{
 		pin_fun FSEL20      : 3;
 		pin_fun FSEL21      : 3;
 		pin_fun FSEL22      : 3;
@@ -86,9 +80,6 @@ struct GPIO_REGS
 		pin_fun FSEL28      : 3;
 		pin_fun FSEL29      : 3;
 		unsigned            : 2;
-	}		GPFSEL2;
-	struct 
-	{
 		pin_fun FSEL30      : 3;
 		pin_fun FSEL31      : 3;
 		pin_fun FSEL32      : 3;
@@ -100,9 +91,6 @@ struct GPIO_REGS
 		pin_fun FSEL38      : 3;
 		pin_fun FSEL39      : 3;
 		unsigned            : 2;
-	}		GPFSEL3;
-	struct 
-	{
 		pin_fun FSEL40      : 3;
 		pin_fun FSEL41      : 3;
 		pin_fun FSEL42      : 3;
@@ -114,15 +102,12 @@ struct GPIO_REGS
 		pin_fun FSEL48      : 3;
 		pin_fun FSEL49      : 3;
 		unsigned            : 2;
-	}		GPFSEL4;
-	struct 
-	{
 		pin_fun FSEL50      : 3;
 		pin_fun FSEL51      : 3;
 		pin_fun FSEL52      : 3;
 		pin_fun FSEL53      : 3;
 		unsigned            : 20;
-	}		GPFSEL5;
+	}		GPFSEL;
 	unsigned			:32;
 	typedef enum
 	{
@@ -163,9 +148,6 @@ struct GPIO_REGS
 		output_set SET29      : 1;
 		output_set SET30      : 1;
 		output_set SET31      : 1;
-	}		GPSET0;
-	struct 
-	{
 		output_set SET32       : 1;
 		output_set SET33       : 1;
 		output_set SET34       : 1;
@@ -189,7 +171,7 @@ struct GPIO_REGS
 		output_set SET52       : 1;
 		output_set SET53       : 1;
 		unsigned               : 10;
-	}		GPSET1;
+	}		GPSET;
 	unsigned			:32;
 	typedef enum
 	{
@@ -230,9 +212,6 @@ struct GPIO_REGS
 		output_clr CLR29      : 1;
 		output_clr CLR30      : 1;
 		output_clr CLR31      : 1;
-	}		GPCLR0;
-	struct 
-	{
 		output_clr CLR32       : 1;
 		output_clr CLR33       : 1;
 		output_clr CLR34       : 1;
@@ -256,7 +235,7 @@ struct GPIO_REGS
 		output_clr CLR52       : 1;
 		output_clr CLR53       : 1;
 		unsigned               : 10;
-	}		GPCLR1;
+	}		GPCLR;
 	unsigned			:32;
 	typedef enum
 	{
@@ -297,9 +276,6 @@ struct GPIO_REGS
 		pin_level LEV29      : 1;
 		pin_level LEV30      : 1;
 		pin_level LEV31      : 1;
-	}		GPLEV0;
-	struct 
-	{
 		pin_level LEV32       : 1;
 		pin_level LEV33       : 1;
 		pin_level LEV34       : 1;
@@ -323,7 +299,7 @@ struct GPIO_REGS
 		pin_level LEV52       : 1;
 		pin_level LEV53       : 1;
 		unsigned	          : 10;
-	}		GPLEV1;
+	}		GPLEV;
 	unsigned			:32;
 	typedef enum
 	{
@@ -364,9 +340,6 @@ struct GPIO_REGS
 		pin_event EDS29	:1;
 		pin_event EDS30	:1;
 		pin_event EDS31	:1;
-	}		GPEDS0;
-	struct 
-	{
 		pin_event EDS32	:1;
 		pin_event EDS33	:1;
 		pin_event EDS34	:1;
@@ -390,7 +363,7 @@ struct GPIO_REGS
 		pin_event EDS52	:1;
 		pin_event EDS53	:1;
 		unsigned		:10;
-	}		GPEDS1;
+	}		GPEDS;
 	unsigned			:32;
 	typedef enum
 	{
@@ -431,10 +404,6 @@ struct GPIO_REGS
 		red_status REN29 : 1;
 		red_status REN30 : 1;
 		red_status REN31 : 1;
-	}		GPREN0;
-	struct
-	{
-
 		red_status REN32 : 1;
 		red_status REN33 : 1;
 		red_status REN34 : 1;
@@ -458,7 +427,7 @@ struct GPIO_REGS
 		red_status REN52 : 1;
 		red_status REN53 : 1;
 		unsigned : 10;
-	}		GPREN1;
+	}		GPREN;
 	unsigned			: 32;
 	typedef enum
 	{
@@ -499,10 +468,6 @@ struct GPIO_REGS
 		fed_status FEN29 : 1;
 		fed_status FEN30 : 1;
 		fed_status FEN31 : 1;
-	}	    GPFEN0;
-	struct
-	{
-
 		fed_status FEN32 : 1;
 		fed_status FEN33 : 1;
 		fed_status FEN34 : 1;
@@ -526,7 +491,7 @@ struct GPIO_REGS
 		fed_status FEN52 : 1;
 		fed_status FEN53 : 1;
 		unsigned : 10;
-	}	    GPFEN1;
+	}	    GPFEN;
 	unsigned			: 32;
 	typedef enum
 	{
@@ -567,10 +532,6 @@ struct GPIO_REGS
 		hd_status HEN29 : 1;
 		hd_status HEN30 : 1;
 		hd_status HEN31 : 1;
-	}	    GPHEN0;
-	struct
-	{
-
 		hd_status HEN32 : 1;
 		hd_status HEN33 : 1;
 		hd_status HEN34 : 1;
@@ -594,7 +555,7 @@ struct GPIO_REGS
 		hd_status HEN52 : 1;
 		hd_status HEN53 : 1;
 		unsigned : 10;
-	}	    GPHEN1;
+	}	    GPHEN;
 	unsigned			: 32;
 	typedef enum
 	{
@@ -635,10 +596,6 @@ struct GPIO_REGS
 		ld_status LEN29 : 1;
 		ld_status LEN30 : 1;
 		ld_status LEN31 : 1;
-	}	    GPLEN0;
-	struct
-	{
-
 		ld_status LEN32 : 1;
 		ld_status LEN33 : 1;
 		ld_status LEN34 : 1;
@@ -662,7 +619,7 @@ struct GPIO_REGS
 		ld_status LEN52 : 1;
 		ld_status LEN53 : 1;
 		unsigned : 10;
-	}	    GPLEN1;
+	}	    GPLEN;
 	unsigned			: 32;
 	typedef enum
 	{
@@ -703,10 +660,6 @@ struct GPIO_REGS
 		ared_status AREN29 : 1;
 		ared_status AREN30 : 1;
 		ared_status AREN31 : 1;
-	}	    GPAREN0;
-	struct
-	{
-
 		ared_status AREN32 : 1;
 		ared_status AREN33 : 1;
 		ared_status AREN34 : 1;
@@ -730,7 +683,7 @@ struct GPIO_REGS
 		ared_status AREN52 : 1;
 		ared_status AREN53 : 1;
 		unsigned : 10;
-	}	    GPAREN1;
+	}	    GPAREN;
 	unsigned			: 32;
 	typedef enum
 	{
@@ -771,10 +724,6 @@ struct GPIO_REGS
 		afed_status AFEN29 : 1;
 		afed_status AFEN30 : 1;
 		afed_status AFEN31 : 1;
-	}	    GPAFEN0;
-	struct
-	{
-
 		afed_status AFEN32 : 1;
 		afed_status AFEN33 : 1;
 		afed_status AFEN34 : 1;
@@ -798,7 +747,7 @@ struct GPIO_REGS
 		afed_status AFEN52 : 1;
 		afed_status AFEN53 : 1;
 		unsigned : 10;
-	}		GPAFEN1;
+	}		GPAFEN;
 	unsigned			: 32;
 	typedef enum
 	{
@@ -851,10 +800,6 @@ struct GPIO_REGS
 		pud_clock PUDCLK29 : 1;
 		pud_clock PUDCLK30 : 1;
 		pud_clock PUDCLK31 : 1;
-	}		GPPUDCLK0;
-	struct
-	{
-
 		pud_clock PUDCLK32 : 1;
 		pud_clock PUDCLK33 : 1;
 		pud_clock PUDCLK34 : 1;
@@ -878,7 +823,7 @@ struct GPIO_REGS
 		pud_clock PUDCLK52 : 1;
 		pud_clock PUDCLK53 : 1;
 		unsigned : 10;
-	}		GPPUDCLK1;
+	}		GPPUDCLK;
 	unsigned			: 32;
 	unsigned			: 32;
 	unsigned			: 32;
