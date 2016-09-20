@@ -53,12 +53,13 @@ void mcloser::operator()(void* p)
 	munmap(p, BLOCK_SIZE);
 }
 
-//void bcm2835::setPinModeIn(pin p)
-//{
-//
-//}
+bcm2835& bcm2835::instance()
+{
+	static bcm2835 bcm;
+	return bcm;
+}
 
-GPIO_REGS& bcm2835::get_Regs()
+GPIO_REGS& bcm2835::registers()
 {
 	return *static_cast<GPIO_REGS*>(p_map_.get());
 }
