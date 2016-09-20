@@ -5,80 +5,65 @@
 namespace rpi_cxx
 {
 
-enum class pinNum
+enum class pinN
 {
-	pin0,
-	pin1,
-	pin2,
-	pin3,
-	pin4,
-	pin5,
-	pin6,
-	pin7,
-	pin8,
-	pin9,
-	pin10,
-	pin11,
-	pin12,
-	pin13,
-	pin14,
-	pin15,
-	pin16,
-	pin17,
-	pin18,
-	pin19,
-	pin20,
-	pin21,
-	pin22,
-	pin23,
-	pin24,
-	pin25,
-	pin26,
-	pin27,
-	pin28,
-	pin29,
-	pin30,
-	pin31,
-	pin32,
-	pin33,
-	pin34,
-	pin35,
-	pin36,
-	pin37,
-	pin38,
-	pin39,
-	pin40,
-	pin41,
-	pin42,
-	pin43,
-	pin44,
-	pin45,
-	pin46,
-	pin47,
-	pin48,
-	pin49,
-	pin50,
-	pin51,
-	pin52,
-	pin53
+	p0,
+	p1,
+	p2,
+	p3,
+	p4,
+	p5,
+	p6,
+	p7,
+	p8,
+	p9,
+	p10,
+	p11,
+	p12,
+	p13,
+	p14,
+	p15,
+	p16,
+	p17,
+	p18,
+	p19,
+	p20,
+	p21,
+	p22,
+	p23,
+	p24,
+	p25,
+	p26,
+	p27,
+	p28,
+	p29,
+	p30,
+	p31,
+	p32,
+	p33,
+	p34,
+	p35,
+	p36,
+	p37,
+	p38,
+	p39,
+	p40,
+	p41,
+	p42,
+	p43,
+	p44,
+	p45,
+	p46,
+	p47,
+	p48,
+	p49,
+	p50,
+	p51,
+	p52,
+	p53
 };
-//struct pin_regs
-//{
-//	GPIO_REGS::pin_fun		&FSEL;
-//	GPIO_REGS::output_set	&SET;
-//	GPIO_REGS::output_clr	&CLR;
-//	GPIO_REGS::pin_level	&LEV;
-//	GPIO_REGS::pin_event	&EDS;
-//	GPIO_REGS::red_status	&REN;
-//	GPIO_REGS::fed_status	&FEN;
-//	GPIO_REGS::hd_status	&HEN;
-//	GPIO_REGS::ld_status	&LEN;
-//	GPIO_REGS::ared_status	&AREN;
-//	GPIO_REGS::afed_status	&AFEN;
-//	GPIO_REGS::pud_clock	&PUDCLK;
-//};
 
-template<pinNum p>
+template<pinN p>
 class pin
 {
 public:
@@ -100,29 +85,29 @@ private:
 	bcm2835&		bcm;
 };
 
-#define PIN_GET_FSEL(n) template<>GPIO_REGS::pin_fun pin<pinNum::pin##n>::getFSEL() \
+#define PIN_GET_FSEL(n) template<>GPIO_REGS::pin_fun pin<pinN::p##n>::getFSEL() \
 						{return bcm.registers().GPFSEL.FSEL##n;}
-#define PIN_GET_SET(n) template<>GPIO_REGS::output_set pin<pinNum::pin##n>::getSET() \
+#define PIN_GET_SET(n) template<>GPIO_REGS::output_set pin<pinN::p##n>::getSET() \
 						{return bcm.registers().GPSET.SET##n;}
-#define PIN_GET_CLR(n) template<>GPIO_REGS::output_clr pin<pinNum::pin##n>::getCLR() \
+#define PIN_GET_CLR(n) template<>GPIO_REGS::output_clr pin<pinN::p##n>::getCLR() \
 						{return bcm.registers().GPCLR.CLR##n;}
-#define PIN_GET_LEV(n) template<>GPIO_REGS::pin_level pin<pinNum::pin##n>::getLEV() \
+#define PIN_GET_LEV(n) template<>GPIO_REGS::pin_level pin<pinN::p##n>::getLEV() \
 						{return bcm.registers().GPLEV.LEV##n;}
-#define PIN_GET_EDS(n) template<>GPIO_REGS::pin_event pin<pinNum::pin##n>::getEDS() \
+#define PIN_GET_EDS(n) template<>GPIO_REGS::pin_event pin<pinN::p##n>::getEDS() \
 						{return bcm.registers().GPEDS.EDS##n;}
-#define PIN_GET_REN(n) template<>GPIO_REGS::red_status pin<pinNum::pin##n>::getREN() \
+#define PIN_GET_REN(n) template<>GPIO_REGS::red_status pin<pinN::p##n>::getREN() \
 						{return bcm.registers().GPREN.REN##n;}
-#define PIN_GET_FEN(n) template<>GPIO_REGS::fed_status pin<pinNum::pin##n>::getFEN() \
+#define PIN_GET_FEN(n) template<>GPIO_REGS::fed_status pin<pinN::p##n>::getFEN() \
 						{return bcm.registers().GPFEN.FEN##n;}
-#define PIN_GET_HEN(n) template<>GPIO_REGS::hd_status pin<pinNum::pin##n>::getHEN() \
+#define PIN_GET_HEN(n) template<>GPIO_REGS::hd_status pin<pinN::p##n>::getHEN() \
 						{return bcm.registers().GPHEN.HEN##n;}
-#define PIN_GET_LEN(n) template<>GPIO_REGS::ld_status pin<pinNum::pin##n>::getLEN() \
+#define PIN_GET_LEN(n) template<>GPIO_REGS::ld_status pin<pinN::p##n>::getLEN() \
 						{return bcm.registers().GPLEN.LEN##n;}
-#define PIN_GET_AREN(n) template<>GPIO_REGS::ared_status pin<pinNum::pin##n>::getAREN() \
+#define PIN_GET_AREN(n) template<>GPIO_REGS::ared_status pin<pinN::p##n>::getAREN() \
 						{return bcm.registers().GPAREN.AREN##n;}
-#define PIN_GET_AFEN(n) template<>GPIO_REGS::afed_status pin<pinNum::pin##n>::getAFEN() \
+#define PIN_GET_AFEN(n) template<>GPIO_REGS::afed_status pin<pinN::p##n>::getAFEN() \
 						{return bcm.registers().GPAFEN.AFEN##n;}
-#define PIN_GET_PUDCLK(n) template<>GPIO_REGS::pud_clock pin<pinNum::pin##n>::getPUDCLK() \
+#define PIN_GET_PUDCLK(n) template<>GPIO_REGS::pud_clock pin<pinN::p##n>::getPUDCLK() \
 						{return bcm.registers().GPPUDCLK.PUDCLK##n;}
 
 #define PIN_GET_ALL(n) PIN_GET_FSEL(n) PIN_GET_SET(n) PIN_GET_CLR(n) PIN_GET_LEV(n) PIN_GET_EDS(n) PIN_GET_REN(n) \
