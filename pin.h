@@ -172,25 +172,22 @@ PIN_SET_ALL(40) PIN_SET_ALL(41) PIN_SET_ALL(42) PIN_SET_ALL(43) PIN_SET_ALL(44) 
 PIN_SET_ALL(48) PIN_SET_ALL(49) PIN_SET_ALL(50) PIN_SET_ALL(51) PIN_SET_ALL(52) PIN_SET_ALL(53)
 
 
-class pin_n
+class pin
 {
 public:
-	pin_n(pinN p) :pn(p),
+	pin(pinN p) :pn(p),
 		foo{
 		[]()->GPIO_REGS::pin_fun {spin<pinN::p0> p; return p.getFSEL(); },
 		[]()->GPIO_REGS::pin_fun {spin<pinN::p1> p; return p.getFSEL(); } }
 	{}
-
-private:
-	const pinN	pn;
-
-	std::function<GPIO_REGS::pin_fun()> foo[2];
-
-
 	GPIO_REGS::pin_fun 		getFSEL()const
 	{
 		return foo[static_cast<size_t>(pn)]();
 	}
+private:
+	const pinN	pn;
+
+	std::function<GPIO_REGS::pin_fun()> foo[2];
 };
 
 }

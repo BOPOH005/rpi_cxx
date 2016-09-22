@@ -1,7 +1,7 @@
 #include <limits.h>
 #include "../bcm2835.h"
 #include "../pin.h"
-#include "../gtest/gtest.h"
+#include "gtest/gtest.h"
 
 
 
@@ -79,9 +79,9 @@ TEST(PIN,InitPIN)
 
 TEST(PIN, DynamicPIN)
 {
-	//ASSERT_THROW(spin<pinN::p0> p, std::runtime_error);
-	pin p(0);
-	p.
+	ASSERT_THROW(pin p(pinN::p0);	std::cout << p.getFSEL(); , std::runtime_error);
+
+	pin p(pinN::p0) p;
 }
 
 
