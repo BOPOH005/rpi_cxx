@@ -1,6 +1,6 @@
 #pragma once
 #include "bcm2835.h"
-#include <cassert>
+//#include <cassert>
 
 namespace rpi_cxx
 {
@@ -171,23 +171,89 @@ PIN_SET_ALL(32) PIN_SET_ALL(33) PIN_SET_ALL(34) PIN_SET_ALL(35) PIN_SET_ALL(36) 
 PIN_SET_ALL(40) PIN_SET_ALL(41) PIN_SET_ALL(42) PIN_SET_ALL(43) PIN_SET_ALL(44) PIN_SET_ALL(45) PIN_SET_ALL(46) PIN_SET_ALL(47)
 PIN_SET_ALL(48) PIN_SET_ALL(49) PIN_SET_ALL(50) PIN_SET_ALL(51) PIN_SET_ALL(52) PIN_SET_ALL(53)
 
+void SetFSELn0 (GPIO_REGS::pin_fun f){spin<pinN::p0> p; p.setFSEL(f); return;}
+void SetFSELn1 (GPIO_REGS::pin_fun f){spin<pinN::p1> p; p.setFSEL(f); return;}
+void SetFSELn2 (GPIO_REGS::pin_fun f){spin<pinN::p2> p; p.setFSEL(f); return;}
+void SetFSELn3 (GPIO_REGS::pin_fun f){spin<pinN::p3> p; p.setFSEL(f); return;}
+void SetFSELn4 (GPIO_REGS::pin_fun f){spin<pinN::p4> p; p.setFSEL(f); return;}
+void SetFSELn5 (GPIO_REGS::pin_fun f){spin<pinN::p5> p; p.setFSEL(f); return;}
+void SetFSELn6 (GPIO_REGS::pin_fun f){spin<pinN::p6> p; p.setFSEL(f); return;}
+void SetFSELn7 (GPIO_REGS::pin_fun f){spin<pinN::p7> p; p.setFSEL(f); return;}
+void SetFSELn8 (GPIO_REGS::pin_fun f){spin<pinN::p8> p; p.setFSEL(f); return;}
+void SetFSELn9 (GPIO_REGS::pin_fun f){spin<pinN::p9> p; p.setFSEL(f); return;}
 
 class pin
 {
 public:
 	pin(pinN p) :pn(p),
-		foo{
-		[]()->GPIO_REGS::pin_fun {spin<pinN::p0> p; return p.getFSEL(); },
-		[]()->GPIO_REGS::pin_fun {spin<pinN::p1> p; return p.getFSEL(); } }
+		foo{ 
+			// SetFSELn0,
+			// SetFSELn1,
+			// SetFSELn2,
+			// SetFSELn3,
+			// SetFSELn4,
+			// SetFSELn5,
+			// SetFSELn6,
+			// SetFSELn7,
+			// SetFSELn8,
+			// SetFSELn9}
+
+		[this](GPIO_REGS::pin_fun f) {p0.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p1.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p2.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p3.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p4.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p5.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p6.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p7.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p8.setFSEL(f); },
+		[this](GPIO_REGS::pin_fun f) {p9.setFSEL(f); }}
 	{}
-	GPIO_REGS::pin_fun 		getFSEL()const
+	void setFSEL(GPIO_REGS::pin_fun f)
 	{
-		return foo[static_cast<size_t>(pn)]();
+		//foo[static_cast<size_t>(pn)](f);
+		switch(pn)
+		{
+			case pinN::p0 : {p0.setFSEL(f); return;}
+			case pinN::p1 : {p1.setFSEL(f); return;}
+			case pinN::p2 : {p2.setFSEL(f); return;}
+			case pinN::p3 : {p3.setFSEL(f); return;}
+			case pinN::p4 : {p4.setFSEL(f); return;}
+			case pinN::p5 : {p5.setFSEL(f); return;}
+			case pinN::p6 : {p6.setFSEL(f); return;}
+			case pinN::p7 : {p7.setFSEL(f); return;}
+			case pinN::p8 : {p8.setFSEL(f); return;}
+			case pinN::p9 : {p9.setFSEL(f); return;}
+		};
 	}
+	void setFSEL_fast(GPIO_REGS::pin_fun f)
+	{
+		int pin=static_cast<int>(pn);
+		int function=static_cast<int>(f);
+		int reg      =  pin/10;
+		int offset   = (pin%10)*3;
+		int *GPFSEL=(int*)static_cast<void*>(&bcm2835::instance().registers());
+		GPFSEL[reg] &= ~((0b111 & ~function) << offset);
+		GPFSEL[reg] |=  ((0b111 &  function) << offset);
+	}
+
+
 private:
 	const pinN	pn;
+	//void (*foo[10])(GPIO_REGS::pin_fun);
 
-	std::function<GPIO_REGS::pin_fun()> foo[2];
+	std::function<void(GPIO_REGS::pin_fun)> foo[10];
+
+	spin<pinN::p0> p0; 
+	spin<pinN::p1> p1; 
+	spin<pinN::p2> p2; 
+	spin<pinN::p3> p3; 
+	spin<pinN::p4> p4; 
+	spin<pinN::p5> p5; 
+	spin<pinN::p6> p6; 
+	spin<pinN::p7> p7; 
+	spin<pinN::p8> p8; 
+	spin<pinN::p9> p9; 
 };
 
 }
