@@ -1,7 +1,7 @@
 #include <limits.h>
-#include "bcm2835.h"
-#include "pin.h"
-#include "gtest/gtest.h"
+#include "../bcm2835.h"
+#include "../pin.h"
+#include "../gtest/gtest.h"
 
 
 
@@ -74,9 +74,15 @@ TEST(GPIO,TestGPPUDCLK)
 
 TEST(PIN,InitPIN)
 {
-	ASSERT_THROW(pin<pinN::p0> p, std::runtime_error);
+	ASSERT_THROW(spin<pinN::p0> p, std::runtime_error);
 }
 
+TEST(PIN, DynamicPIN)
+{
+	//ASSERT_THROW(spin<pinN::p0> p, std::runtime_error);
+	pin p(0);
+	p.
+}
 
 
 int main(int argc, char *argv[])
