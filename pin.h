@@ -65,10 +65,11 @@ enum class pinN
 
 
 template<pinN p>
-class spin
+class pinregs
 {
 public:
-	spin():bcm(bcm2835::instance()) {};
+	static pinregs<p> &instance();
+
 	GPIO_REGS::pin_fun 		getFSEL()const;
 	GPIO_REGS::output_set	getSET()const;
 	GPIO_REGS::output_clr	getCLR()const;
@@ -95,165 +96,34 @@ public:
 	void setAFEN(GPIO_REGS::afed_status);
 	void setPUDCLK(GPIO_REGS::pud_clock);
 private:
-	bcm2835&		bcm;
+	//bcm2835&		bcm;
+	GPIO_REGS	&regs;
+
+	pinregs():regs(bcm2835::instance().registers()) {};
 };
 
 
-#define PIN_GET_FSEL(n) template<>GPIO_REGS::pin_fun spin<pinN::p##n>::getFSEL()const \
-						{return bcm.registers().GPFSEL.FSEL##n;}
-#define PIN_GET_SET(n) template<>GPIO_REGS::output_set spin<pinN::p##n>::getSET()const\
-						{return bcm.registers().GPSET.SET##n;}
-#define PIN_GET_CLR(n) template<>GPIO_REGS::output_clr spin<pinN::p##n>::getCLR()const\
-						{return bcm.registers().GPCLR.CLR##n;}
-#define PIN_GET_LEV(n) template<>GPIO_REGS::pin_level spin<pinN::p##n>::getLEV()const\
-						{return bcm.registers().GPLEV.LEV##n;}
-#define PIN_GET_EDS(n) template<>GPIO_REGS::pin_event spin<pinN::p##n>::getEDS()const\
-						{return bcm.registers().GPEDS.EDS##n;}
-#define PIN_GET_REN(n) template<>GPIO_REGS::red_status spin<pinN::p##n>::getREN()const\
-						{return bcm.registers().GPREN.REN##n;}
-#define PIN_GET_FEN(n) template<>GPIO_REGS::fed_status spin<pinN::p##n>::getFEN()const\
-						{return bcm.registers().GPFEN.FEN##n;}
-#define PIN_GET_HEN(n) template<>GPIO_REGS::hd_status spin<pinN::p##n>::getHEN()const\
-						{return bcm.registers().GPHEN.HEN##n;}
-#define PIN_GET_LEN(n) template<>GPIO_REGS::ld_status spin<pinN::p##n>::getLEN()const\
-						{return bcm.registers().GPLEN.LEN##n;}
-#define PIN_GET_AREN(n) template<>GPIO_REGS::ared_status spin<pinN::p##n>::getAREN()const\
-						{return bcm.registers().GPAREN.AREN##n;}
-#define PIN_GET_AFEN(n) template<>GPIO_REGS::afed_status spin<pinN::p##n>::getAFEN()const\
-						{return bcm.registers().GPAFEN.AFEN##n;}
-#define PIN_GET_PUDCLK(n) template<>GPIO_REGS::pud_clock spin<pinN::p##n>::getPUDCLK()const\
-						{return bcm.registers().GPPUDCLK.PUDCLK##n;}
+#define DEF53(macro) 	macro(0)  macro(1)  macro(2)  macro(3)  macro(4)  macro(5)  macro(6)  macro(7) \
+						macro(8)  macro(9)  macro(10) macro(11) macro(12) macro(13) macro(14) macro(15)\
+						macro(16) macro(17) macro(18) macro(19) macro(20) macro(21) macro(22) macro(23)\
+						macro(24) macro(25) macro(26) macro(27) macro(28) macro(29) macro(30) macro(31)\
+						macro(32) macro(33) macro(34) macro(35) macro(36) macro(37) macro(38) macro(39)\
+						macro(40) macro(41) macro(42) macro(43) macro(44) macro(45) macro(46) macro(47)\
+						macro(48) macro(49) macro(50) macro(51) macro(52) macro(53)
 
-#define PIN_GET_ALL(n) PIN_GET_FSEL(n) PIN_GET_SET(n) PIN_GET_CLR(n) PIN_GET_LEV(n) PIN_GET_EDS(n) PIN_GET_REN(n) \
-		PIN_GET_FEN(n) PIN_GET_HEN(n) PIN_GET_LEN(n) PIN_GET_AREN(n) PIN_GET_AFEN(n) PIN_GET_PUDCLK(n)
-
-PIN_GET_ALL(0)  PIN_GET_ALL(1)  PIN_GET_ALL(2)  PIN_GET_ALL(3)  PIN_GET_ALL(4)  PIN_GET_ALL(5)  PIN_GET_ALL(6)  PIN_GET_ALL(7)
-PIN_GET_ALL(8)  PIN_GET_ALL(9)  PIN_GET_ALL(10) PIN_GET_ALL(11) PIN_GET_ALL(12) PIN_GET_ALL(13) PIN_GET_ALL(14) PIN_GET_ALL(15)
-PIN_GET_ALL(16) PIN_GET_ALL(17) PIN_GET_ALL(18) PIN_GET_ALL(19) PIN_GET_ALL(20) PIN_GET_ALL(21) PIN_GET_ALL(22) PIN_GET_ALL(23)
-PIN_GET_ALL(24) PIN_GET_ALL(25) PIN_GET_ALL(26) PIN_GET_ALL(27) PIN_GET_ALL(28) PIN_GET_ALL(29) PIN_GET_ALL(30) PIN_GET_ALL(31)
-PIN_GET_ALL(32) PIN_GET_ALL(33) PIN_GET_ALL(34) PIN_GET_ALL(35) PIN_GET_ALL(36) PIN_GET_ALL(37) PIN_GET_ALL(38) PIN_GET_ALL(39)
-PIN_GET_ALL(40) PIN_GET_ALL(41) PIN_GET_ALL(42) PIN_GET_ALL(43) PIN_GET_ALL(44) PIN_GET_ALL(45) PIN_GET_ALL(46) PIN_GET_ALL(47)
-PIN_GET_ALL(48) PIN_GET_ALL(49) PIN_GET_ALL(50) PIN_GET_ALL(51) PIN_GET_ALL(52) PIN_GET_ALL(53)
-
-#define PIN_SET_FSEL(n) template<> void spin<pinN::p##n>::setFSEL(GPIO_REGS::pin_fun p) \
-						{bcm.registers().GPFSEL.FSEL##n=p;}
-#define PIN_SET_SET(n) template<> void spin<pinN::p##n>::setSET(GPIO_REGS::output_set p)\
-						{bcm.registers().GPSET.SET##n=p;}
-#define PIN_SET_CLR(n) template<> void spin<pinN::p##n>::setCLR(GPIO_REGS::output_clr p)\
-						{bcm.registers().GPCLR.CLR##n=p;}
-#define PIN_SET_LEV(n) template<> void spin<pinN::p##n>::setLEV(GPIO_REGS::pin_level p)\
-						{bcm.registers().GPLEV.LEV##n=p;}
-#define PIN_SET_EDS(n) template<> void spin<pinN::p##n>::setEDS(GPIO_REGS::pin_event p)\
-						{bcm.registers().GPEDS.EDS##n=p;}
-#define PIN_SET_REN(n) template<> void spin<pinN::p##n>::setREN(GPIO_REGS::red_status p)\
-						{bcm.registers().GPREN.REN##n=p;}
-#define PIN_SET_FEN(n) template<> void spin<pinN::p##n>::setFEN(GPIO_REGS::fed_status p)\
-						{bcm.registers().GPFEN.FEN##n=p;}
-#define PIN_SET_HEN(n) template<> void spin<pinN::p##n>::setHEN(GPIO_REGS::hd_status p)\
-						{bcm.registers().GPHEN.HEN##n=p;}
-#define PIN_SET_LEN(n) template<> void spin<pinN::p##n>::setLEN(GPIO_REGS::ld_status p)\
-						{bcm.registers().GPLEN.LEN##n=p;}
-#define PIN_SET_AREN(n) template<> void spin<pinN::p##n>::setAREN(GPIO_REGS::ared_status p)\
-						{bcm.registers().GPAREN.AREN##n=p;}
-#define PIN_SET_AFEN(n) template<> void spin<pinN::p##n>::setAFEN(GPIO_REGS::afed_status p)\
-						{bcm.registers().GPAFEN.AFEN##n=p;}
-#define PIN_SET_PUDCLK(n) template<> void spin<pinN::p##n>::setPUDCLK(GPIO_REGS::pud_clock p)\
-						{bcm.registers().GPPUDCLK.PUDCLK##n=p;}
-
-#define PIN_SET_ALL(n) PIN_SET_FSEL(n) PIN_SET_SET(n) PIN_SET_CLR(n) PIN_SET_LEV(n) PIN_SET_EDS(n) PIN_SET_REN(n) \
-		PIN_SET_FEN(n) PIN_SET_HEN(n) PIN_SET_LEN(n) PIN_SET_AREN(n) PIN_SET_AFEN(n) PIN_SET_PUDCLK(n)
-
-PIN_SET_ALL(0)  PIN_SET_ALL(1)  PIN_SET_ALL(2)  PIN_SET_ALL(3)  PIN_SET_ALL(4)  PIN_SET_ALL(5)  PIN_SET_ALL(6)  PIN_SET_ALL(7)
-PIN_SET_ALL(8)  PIN_SET_ALL(9)  PIN_SET_ALL(10) PIN_SET_ALL(11) PIN_SET_ALL(12) PIN_SET_ALL(13) PIN_SET_ALL(14) PIN_SET_ALL(15)
-PIN_SET_ALL(16) PIN_SET_ALL(17) PIN_SET_ALL(18) PIN_SET_ALL(19) PIN_SET_ALL(20) PIN_SET_ALL(21) PIN_SET_ALL(22) PIN_SET_ALL(23)
-PIN_SET_ALL(24) PIN_SET_ALL(25) PIN_SET_ALL(26) PIN_SET_ALL(27) PIN_SET_ALL(28) PIN_SET_ALL(29) PIN_SET_ALL(30) PIN_SET_ALL(31)
-PIN_SET_ALL(32) PIN_SET_ALL(33) PIN_SET_ALL(34) PIN_SET_ALL(35) PIN_SET_ALL(36) PIN_SET_ALL(37) PIN_SET_ALL(38) PIN_SET_ALL(39)
-PIN_SET_ALL(40) PIN_SET_ALL(41) PIN_SET_ALL(42) PIN_SET_ALL(43) PIN_SET_ALL(44) PIN_SET_ALL(45) PIN_SET_ALL(46) PIN_SET_ALL(47)
-PIN_SET_ALL(48) PIN_SET_ALL(49) PIN_SET_ALL(50) PIN_SET_ALL(51) PIN_SET_ALL(52) PIN_SET_ALL(53)
-
-void SetFSELn0 (GPIO_REGS::pin_fun f){spin<pinN::p0> p; p.setFSEL(f); return;}
-void SetFSELn1 (GPIO_REGS::pin_fun f){spin<pinN::p1> p; p.setFSEL(f); return;}
-void SetFSELn2 (GPIO_REGS::pin_fun f){spin<pinN::p2> p; p.setFSEL(f); return;}
-void SetFSELn3 (GPIO_REGS::pin_fun f){spin<pinN::p3> p; p.setFSEL(f); return;}
-void SetFSELn4 (GPIO_REGS::pin_fun f){spin<pinN::p4> p; p.setFSEL(f); return;}
-void SetFSELn5 (GPIO_REGS::pin_fun f){spin<pinN::p5> p; p.setFSEL(f); return;}
-void SetFSELn6 (GPIO_REGS::pin_fun f){spin<pinN::p6> p; p.setFSEL(f); return;}
-void SetFSELn7 (GPIO_REGS::pin_fun f){spin<pinN::p7> p; p.setFSEL(f); return;}
-void SetFSELn8 (GPIO_REGS::pin_fun f){spin<pinN::p8> p; p.setFSEL(f); return;}
-void SetFSELn9 (GPIO_REGS::pin_fun f){spin<pinN::p9> p; p.setFSEL(f); return;}
 
 class pin
 {
 public:
-	pin(pinN p) :pn(p),
-		foo{ 
-			// SetFSELn0,
-			// SetFSELn1,
-			// SetFSELn2,
-			// SetFSELn3,
-			// SetFSELn4,
-			// SetFSELn5,
-			// SetFSELn6,
-			// SetFSELn7,
-			// SetFSELn8,
-			// SetFSELn9}
-
-		[this](GPIO_REGS::pin_fun f) {p0.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p1.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p2.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p3.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p4.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p5.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p6.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p7.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p8.setFSEL(f); },
-		[this](GPIO_REGS::pin_fun f) {p9.setFSEL(f); }}
-	{}
-	void setFSEL(GPIO_REGS::pin_fun f)
-	{
-		//foo[static_cast<size_t>(pn)](f);
-		switch(pn)
-		{
-			case pinN::p0 : {p0.setFSEL(f); return;}
-			case pinN::p1 : {p1.setFSEL(f); return;}
-			case pinN::p2 : {p2.setFSEL(f); return;}
-			case pinN::p3 : {p3.setFSEL(f); return;}
-			case pinN::p4 : {p4.setFSEL(f); return;}
-			case pinN::p5 : {p5.setFSEL(f); return;}
-			case pinN::p6 : {p6.setFSEL(f); return;}
-			case pinN::p7 : {p7.setFSEL(f); return;}
-			case pinN::p8 : {p8.setFSEL(f); return;}
-			case pinN::p9 : {p9.setFSEL(f); return;}
-		};
-	}
-	void setFSEL_fast(GPIO_REGS::pin_fun f)
-	{
-		int pin=static_cast<int>(pn);
-		int function=static_cast<int>(f);
-		int reg      =  pin/10;
-		int offset   = (pin%10)*3;
-		int *GPFSEL=(int*)static_cast<void*>(&bcm2835::instance().registers());
-		GPFSEL[reg] &= ~((0b111 & ~function) << offset);
-		GPFSEL[reg] |=  ((0b111 &  function) << offset);
-	}
-
+	pin(pinN p);
+	void setFSEL_1(GPIO_REGS::pin_fun f);
+	void setFSEL_2(GPIO_REGS::pin_fun f);
+	void setFSEL_3(GPIO_REGS::pin_fun f);
 
 private:
 	const pinN	pn;
-	//void (*foo[10])(GPIO_REGS::pin_fun);
 
-	std::function<void(GPIO_REGS::pin_fun)> foo[10];
-
-	spin<pinN::p0> p0; 
-	spin<pinN::p1> p1; 
-	spin<pinN::p2> p2; 
-	spin<pinN::p3> p3; 
-	spin<pinN::p4> p4; 
-	spin<pinN::p5> p5; 
-	spin<pinN::p6> p6; 
-	spin<pinN::p7> p7; 
-	spin<pinN::p8> p8; 
-	spin<pinN::p9> p9; 
+	std::function<void(GPIO_REGS::pin_fun)> foo[55];
 };
 
 }

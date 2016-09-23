@@ -75,7 +75,7 @@ TEST(GPIO,TestGPPUDCLK)
 
 TEST(PIN,InitPIN)
 {
-	ASSERT_THROW(spin<pinN::p0> p, std::runtime_error);
+	ASSERT_THROW(pinregs<pinN::p0>::instance(), std::runtime_error);
 }
 
 TEST(PIN, DynamicPIN)
@@ -87,70 +87,53 @@ TEST(PIN, DynamicPIN)
 
 TEST(PIN, TestSpeed)
 {
-	pin p[]={pinN::p0, pinN::p1, pinN::p2, pinN::p3, pinN::p4, pinN::p5, pinN::p6, pinN::p7, pinN::p8, pinN::p9};
-	spin<pinN::p0> sp0;
-	spin<pinN::p1> sp1;
-	spin<pinN::p2> sp2;
-	spin<pinN::p3> sp3;
-	spin<pinN::p4> sp4;
-	spin<pinN::p5> sp5;
-	spin<pinN::p6> sp6;
-	spin<pinN::p7> sp7;
-	spin<pinN::p8> sp8;
-	spin<pinN::p9> sp9;
+	pin p[]={
+#define DEF_PIN_N(n) pinN::p##n,
+			DEF53(DEF_PIN_N)
+			pinN::p0
+			};
+
+#define DEF_PINREGS(n) auto sp##n=pinregs<pinN::p##n>::instance();
+	DEF53(DEF_PINREGS)
+
+	const size_t count=100000000;
 
 	auto t1=std::chrono::high_resolution_clock::now();
-	for(int i=0; i<1000; ++i){
-			p[0].setFSEL(GPIO_REGS::out);
-		p[1].setFSEL(GPIO_REGS::out);
-		p[2].setFSEL(GPIO_REGS::out);
-		p[3].setFSEL(GPIO_REGS::out);
-		p[4].setFSEL(GPIO_REGS::out);
-		p[5].setFSEL(GPIO_REGS::out);
-		p[6].setFSEL(GPIO_REGS::out);
-		p[7].setFSEL(GPIO_REGS::out);
-		p[8].setFSEL(GPIO_REGS::out);
-		p[9].setFSEL(GPIO_REGS::out);
+	for(size_t i=0; i<count; ++i){
+#define SET_FSEL_1(n) p[n].setFSEL_1(GPIO_REGS::out);
+		DEF53(SET_FSEL_1)
 		}
 	auto t2=std::chrono::high_resolution_clock::now();
-	for(int i=0; i<1000; ++i)
+	for(size_t i=0; i<count; ++i)
 	{
-		p[0].setFSEL_fast(GPIO_REGS::out);
-		p[1].setFSEL_fast(GPIO_REGS::out);
-		p[2].setFSEL_fast(GPIO_REGS::out);
-		p[3].setFSEL_fast(GPIO_REGS::out);
-		p[4].setFSEL_fast(GPIO_REGS::out);
-		p[5].setFSEL_fast(GPIO_REGS::out);
-		p[6].setFSEL_fast(GPIO_REGS::out);
-		p[7].setFSEL_fast(GPIO_REGS::out);
-		p[8].setFSEL_fast(GPIO_REGS::out);
-		p[9].setFSEL_fast(GPIO_REGS::out);
+#define SET_FSEL_2(n) p[n].setFSEL_2(GPIO_REGS::out);
+		DEF53(SET_FSEL_2)
 	}
 	auto t3=std::chrono::high_resolution_clock::now();
-	for(int i=0; i<1000; ++i){
-		sp0.setFSEL(GPIO_REGS::out);
-		sp1.setFSEL(GPIO_REGS::out);
-		sp2.setFSEL(GPIO_REGS::out);
-		sp3.setFSEL(GPIO_REGS::out);
-		sp4.setFSEL(GPIO_REGS::out);
-		sp5.setFSEL(GPIO_REGS::out);
-		sp6.setFSEL(GPIO_REGS::out);
-		sp7.setFSEL(GPIO_REGS::out);
-		sp8.setFSEL(GPIO_REGS::out);
-		sp9.setFSEL(GPIO_REGS::out);
-	
-		}
+	for(size_t i=0; i<count; ++i)
+	{
+#define SET_FSEL_3(n) p[n].setFSEL_3(GPIO_REGS::out);
+		DEF53(SET_FSEL_3)
+	}
 	auto t4=std::chrono::high_resolution_clock::now();
+
+	for(size_t i=0; i<count; ++i){
+#define SET_FSEL_4(n) sp##n.setFSEL(GPIO_REGS::out);
+		DEF53(SET_FSEL_4)
+		}
+	auto t5=std::chrono::high_resolution_clock::now();
 
 	auto d1 =(t2-t1).count();
 	auto d2 = (t3-t2).count();
 	auto d3 = (t4-t3).count();
-	std::cout 	<< "spin        =" << std::setw(10) << d3 << std::endl
-				<< "setFSEL_fast=" << std::setw(10) << d2 << " more " << ((float)(d2-d3)/(float)d3)*100 << "%" << std::endl
-				<< "setFSEL=     "  << std::setw(10) << d1 << " more " << ((float)(d1-d3)/(float)d3)*100 << "%" << std::endl;
+	auto d4 = (t5-t4).count();
+	std::cout 	<< "pinregs<n> =" << d4 << std::endl
+				<< "bit manual =" << d3 << " more " << ((float)(d3-d4)/(float)d4)*100 << "%" << std::endl
+				<< "switch     =" << d1 << " more " << ((float)(d1-d4)/(float)d4)*100 << "%" << std::endl
+				<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
 
 
-	ASSERT_TRUE( d3 < d2  );
+	ASSERT_TRUE( d4<=d1 && d4<=d2 && d4<=d3 );
 }
 
 
