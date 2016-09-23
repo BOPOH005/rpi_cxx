@@ -36,14 +36,14 @@ struct GPIO_REGS
 {
 	typedef enum
 	{
-		in	=0x0,
-		out	=0x1,
-		fun0=0x4,
-		fun1=0x5,
-		fun2=0x6,
-		fun3=0x7,
-		fun4=0x3,
-		fun5=0x2
+		in	=0b000,
+		out	=0b001,
+		fun0=0b100,
+		fun1=0b101,
+		fun2=0b110,
+		fun3=0b111,
+		fun4=0b011,
+		fun5=0b010
 	}pin_fun;
 	struct 
 	{

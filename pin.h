@@ -102,6 +102,18 @@ private:
 	pinregs():regs(bcm2835::instance().registers()) {};
 };
 
+template<pinN p>
+class gpio_p
+{
+public:
+							gpio_p() :_regs(pinregs<p>::instance());
+	pinregs<p>&				regs() { return _regs; }
+	void					mode(GPIO_REGS::pin_fun f) {_regs.setFSEL(f);}
+	void					write(GPIO_REGS::pin_level s) { s==GPIO_REGS::pin_level::hight?_regs.setSET(GPIO_REGS::output_set::setOut): _regs.setCLR(GPIO_REGS::output_clr::clearOut); }
+	GPIO_REGS::pin_level	read()const { return _regs.getLEV(); }
+private:
+	static pinregs<p> &_regs;
+};
 
 #define DEF53(macro) 	macro(0)  macro(1)  macro(2)  macro(3)  macro(4)  macro(5)  macro(6)  macro(7) \
 						macro(8)  macro(9)  macro(10) macro(11) macro(12) macro(13) macro(14) macro(15)\
@@ -116,14 +128,10 @@ class pin
 {
 public:
 	pin(pinN p);
-	void setFSEL_1(GPIO_REGS::pin_fun f);
-	void setFSEL_2(GPIO_REGS::pin_fun f);
-	void setFSEL_3(GPIO_REGS::pin_fun f);
+	void setFSEL(GPIO_REGS::pin_fun f);
 
 private:
 	const pinN	pn;
-
-	std::function<void(GPIO_REGS::pin_fun)> foo[55];
 };
 
 }

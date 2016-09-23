@@ -97,35 +97,16 @@ DEF53(PIN_GET_ALL)
 DEF53(PIN_SET_ALL)
 
 
-pin::pin(pinN p) :pn(p),
-	foo{
-#define INST_SET_FSEL(n) [](GPIO_REGS::pin_fun f) {static auto pn=pinregs<pinN::p##n>::instance(); pn.setFSEL(f); return;},
-	DEF53(INST_SET_FSEL)
-	[](GPIO_REGS::pin_fun f){}}
+pin::pin(pinN p) :pn(p)
 {}
 
-void pin::setFSEL_1(GPIO_REGS::pin_fun f)
+void pin::setFSEL(GPIO_REGS::pin_fun f)
 {
 	switch(pn)
 	{
 #define CASE_SET_FSEL(n) case pinN::p##n : {static auto pn=pinregs<pinN::p##n>::instance(); pn.setFSEL(f); return;}
 	DEF53(CASE_SET_FSEL)
 	};
-}
-void pin::setFSEL_2(GPIO_REGS::pin_fun f)
-{
-	foo[static_cast<size_t>(pn)](f);
-}
-void pin::setFSEL_3(GPIO_REGS::pin_fun f)
-{
-	static int* const GPFSEL=(int*)static_cast<void*>(&bcm2835::instance().registers());
-
-	int pin=static_cast<int>(pn);
-	int function=static_cast<int>(f);
-	int reg      =  pin/10;
-	int offset   = (pin%10)*3;
-	GPFSEL[reg] &= ~((0b111 & ~function) << offset);
-	GPFSEL[reg] |=  ((0b111 &  function) << offset);
 }
 
 }
