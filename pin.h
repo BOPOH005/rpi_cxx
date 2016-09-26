@@ -106,7 +106,8 @@ template<pinN p>
 class gpio_p
 {
 public:
-							gpio_p() :_regs(pinregs<p>::instance());
+							gpio_p() :_regs(pinregs<p>::instance()) {};
+							gpio_p(GPIO_REGS::pin_fun f) :_regs(pinregs<p>::instance()) {mode(f)};
 	pinregs<p>&				regs() { return _regs; }
 	void					mode(GPIO_REGS::pin_fun f) {_regs.setFSEL(f);}
 	void					write(GPIO_REGS::pin_level s) { s==GPIO_REGS::pin_level::hight?_regs.setSET(GPIO_REGS::output_set::setOut): _regs.setCLR(GPIO_REGS::output_clr::clearOut); }

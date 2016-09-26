@@ -3,6 +3,7 @@
 #include "../pin.h"
 #include "gtest/gtest.h"
 #include <chrono>
+#include <thread>
 
 
 
@@ -100,19 +101,16 @@ TEST(PIN, TestSpeed)
 
 	auto t1=std::chrono::high_resolution_clock::now();
 	for(size_t i=0; i<count; ++i){
-#define SET_FSEL_1(n) p[n].setFSEL_1(GPIO_REGS::out);
+#define SET_FSEL_1(n) p[n].setFSEL(GPIO_REGS::out);
 		DEF53(SET_FSEL_1)
 		}
 	auto t2=std::chrono::high_resolution_clock::now();
 	for(size_t i=0; i<count; ++i)
 	{
-#define SET_FSEL_2(n) p[n].setFSEL_2(GPIO_REGS::out);
-		DEF53(SET_FSEL_2)
-	}
-	auto t3=std::chrono::high_resolution_clock::now();
-	for(size_t i=0; i<count; ++i)
-	{
-#define SET_FSEL_3(n) p[n].setFSEL_3(GPIO_REGS::out);
+#define SET_FSEL_3(n) {	 int reg      =  n/10;\
+		int offset = (n % 10) * 3;\
+		GPFSEL[reg] &= ~((0b111 & ~0b001) << offset);\
+		GPFSEL[reg] |= ((0b111 & 0b000) << offset); }
 		DEF53(SET_FSEL_3)
 	}
 	auto t4=std::chrono::high_resolution_clock::now();
@@ -124,18 +122,40 @@ TEST(PIN, TestSpeed)
 	auto t5=std::chrono::high_resolution_clock::now();
 
 	auto d1 =(t2-t1).count();
-	auto d2 = (t3-t2).count();
-	auto d3 = (t4-t3).count();
+	auto d2 = (t4-t2).count();
+	//auto d3 = (t4-t3).count();
 	auto d4 = (t5-t4).count();
-	std::cout 	<< "pinregs<n> =" << d4 << std::endl
-				<< "bit manual =" << d3 << " more " << ((float)(d3-d4)/(float)d4)*100 << "%" << std::endl
-				<< "switch     =" << d1 << " more " << ((float)(d1-d4)/(float)d4)*100 << "%" << std::endl
-				<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
+	std::cout << "pinregs<n> =" << d4 << std::endl
+		<< "bit manual =" << d2 << " more " << ((float)(d3 - d4) / (float)d4) * 100 << "%" << std::endl
+		<< "switch     =" << d1 << " more " << ((float)(d1 - d4) / (float)d4) * 100 << "%" << std::endl;
+//				<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
 
 
-	ASSERT_TRUE( d4<=d1 && d4<=d2 && d4<=d3 );
+	ASSERT_TRUE( d4<=d1 && d4<=d2 );
 }
 
+TEST(PIN, Blink)
+{
+	try
+	{
+		gpio_p<pinN::p0> p0(GPIO_REGS::out);
+
+		p0.write(GPIO_REGS::hight);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		ASSERT_TRUE(p0.read() == GPIO_REGS::hight);
+		p0.write(GPIO_REGS::low);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		ASSERT_TRUE(p0.read() == GPIO_REGS::low);
+	}
+	catch (std::runtime_error err)
+	{
+		FAIL() << "Ошибка! Проверте запуск с sudo";
+	}
+	catch(...)
+	{
+		FAIL() << "Нeизвестное исключение";
+	}
+}
 
 
 int main(int argc, char *argv[])
