@@ -76,35 +76,36 @@ TEST(GPIO,TestGPPUDCLK)
 
 TEST(PIN,InitPIN)
 {
-	ASSERT_THROW(pinregs<pinN::p0>::instance(), std::runtime_error);
+	ASSERT_THROW(gpio_regs<pinN::p0>::instance(), std::runtime_error);
 }
 
 TEST(PIN, DynamicPIN)
 {
-	ASSERT_THROW(pin p(pinN::p0), std::runtime_error);
+	ASSERT_THROW(gpio_pin p(pinN::p0), std::runtime_error);
 }
 
 
 
 TEST(PIN, TestSpeed)
 {
-	pin p[]={
+	gpio_pin p[]={
 #define DEF_PIN_N(n) pinN::p##n,
 			DEF53(DEF_PIN_N)
 			pinN::p0
 			};
 
-#define DEF_PINREGS(n) auto sp##n=pinregs<pinN::p##n>::instance();
+#define DEF_PINREGS(n) auto sp##n=gpio_regs<pinN::p##n>::instance();
 	DEF53(DEF_PINREGS)
 
 	const size_t count=100000000;
 
 	auto t1=std::chrono::high_resolution_clock::now();
-	for(size_t i=0; i<count; ++i){
-#define SET_FSEL_1(n) p[n].setFSEL(GPIO_REGS::out);
-		DEF53(SET_FSEL_1)
-		}
+ 	for(size_t i=0; i<count; ++i){
+ #define SET_FSEL_1(n) p[n].setmode(mode::out);
+ 		DEF53(SET_FSEL_1)
+ 		}
 	auto t2=std::chrono::high_resolution_clock::now();
+	unsigned *GPFSEL = reinterpret_cast<unsigned*> (&bcm2835::instance().registers());
 	for(size_t i=0; i<count; ++i)
 	{
 #define SET_FSEL_3(n) {	 int reg      =  n/10;\
@@ -116,7 +117,7 @@ TEST(PIN, TestSpeed)
 	auto t4=std::chrono::high_resolution_clock::now();
 
 	for(size_t i=0; i<count; ++i){
-#define SET_FSEL_4(n) sp##n.setFSEL(GPIO_REGS::out);
+#define SET_FSEL_4(n) sp##n.setFSEL(mode::out);
 		DEF53(SET_FSEL_4)
 		}
 	auto t5=std::chrono::high_resolution_clock::now();
@@ -125,8 +126,8 @@ TEST(PIN, TestSpeed)
 	auto d2 = (t4-t2).count();
 	//auto d3 = (t4-t3).count();
 	auto d4 = (t5-t4).count();
-	std::cout << "pinregs<n> =" << d4 << std::endl
-		<< "bit manual =" << d2 << " more " << ((float)(d3 - d4) / (float)d4) * 100 << "%" << std::endl
+	std::cout << "gpio_regs<n> =" << d4 << std::endl
+		<< "bit manual =" << d2 << " more " << ((float)(d2 - d4) / (float)d4) * 100 << "%" << std::endl
 		<< "switch     =" << d1 << " more " << ((float)(d1 - d4) / (float)d4) * 100 << "%" << std::endl;
 //				<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
 
@@ -138,22 +139,24 @@ TEST(PIN, Blink)
 {
 	try
 	{
-		gpio_p<pinN::p0> p0(GPIO_REGS::out);
+		gpio_p<pinN::p15> p0(mode::out);
 
-		p0.write(GPIO_REGS::hight);
+		p0.write(level::hight);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		ASSERT_TRUE(p0.read() == GPIO_REGS::hight);
-		p0.write(GPIO_REGS::low);
+		ASSERT_TRUE(p0.read() == level::hight);
+		p0.write(level::low);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		ASSERT_TRUE(p0.read() == GPIO_REGS::low);
+		ASSERT_TRUE(p0.read() == level::low);
+
+
 	}
 	catch (std::runtime_error err)
 	{
-		FAIL() << "Îøèáêà! Ïðîâåðòå çàïóñê ñ sudo";
+		FAIL() << "ÐžÑˆÐ¸Ð±ÐºÐ°! ÐŸÑ€Ð¾Ð²ÐµÑ€Ñ‚Ðµ Ð·Ð°Ð¿ÑƒÑÐº Ñ sudo";
 	}
 	catch(...)
 	{
-		FAIL() << "Íeèçâåñòíîå èñêëþ÷åíèå";
+		FAIL() << "ÐeÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾Ðµ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ";
 	}
 }
 

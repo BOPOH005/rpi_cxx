@@ -65,56 +65,58 @@ enum class pinN
 
 
 template<pinN p>
-class pinregs
+class gpio_regs
 {
 public:
-	static pinregs<p> &instance();
+	static gpio_regs<p> &instance();
 
-	GPIO_REGS::pin_fun 		getFSEL()const;
-	GPIO_REGS::output_set	getSET()const;
-	GPIO_REGS::output_clr	getCLR()const;
-	GPIO_REGS::pin_level	getLEV()const;
-	GPIO_REGS::pin_event	getEDS()const;
-	GPIO_REGS::red_status	getREN()const;
-	GPIO_REGS::fed_status	getFEN()const;
-	GPIO_REGS::hd_status	getHEN()const;
-	GPIO_REGS::ld_status	getLEN()const;
-	GPIO_REGS::ared_status	getAREN()const;
-	GPIO_REGS::afed_status	getAFEN()const;
-	GPIO_REGS::pud_clock	getPUDCLK()const;
+	mode 	getFSEL()const;
+	output	getSET()const;
+	output	getCLR()const;
+	level	getLEV()const;
+	event	getEDS()const;
+	status	getREN()const;
+	status	getFEN()const;
+	status	getHEN()const;
+	status	getLEN()const;
+	status	getAREN()const;
+	status	getAFEN()const;
+	clock	getPUDCLK()const;
 
-	void setFSEL(GPIO_REGS::pin_fun);
-	void setSET(GPIO_REGS::output_set);
-	void setCLR(GPIO_REGS::output_clr);
-	void setLEV(GPIO_REGS::pin_level);
-	void setEDS(GPIO_REGS::pin_event);
-	void setREN(GPIO_REGS::red_status);
-	void setFEN(GPIO_REGS::fed_status);
-	void setHEN(GPIO_REGS::hd_status);
-	void setLEN(GPIO_REGS::ld_status);
-	void setAREN(GPIO_REGS::ared_status);
-	void setAFEN(GPIO_REGS::afed_status);
-	void setPUDCLK(GPIO_REGS::pud_clock);
+	void setFSEL(mode);
+	void setSET(output);
+	void setCLR(output);
+	void setLEV(level);
+	void setEDS(event);
+	void setREN(status);
+	void setFEN(status);
+	void setHEN(status);
+	void setLEN(status);
+	void setAREN(status);
+	void setAFEN(status);
+	void setPUDCLK(clock);
 private:
 	//bcm2835&		bcm;
 	GPIO_REGS	&regs;
 
-	pinregs():regs(bcm2835::instance().registers()) {};
+	gpio_regs():regs(bcm2835::instance().registers()) {};
 };
 
 template<pinN p>
 class gpio_p
 {
 public:
-							gpio_p() :_regs(pinregs<p>::instance()) {};
-							gpio_p(GPIO_REGS::pin_fun f) :_regs(pinregs<p>::instance()) {mode(f)};
-	pinregs<p>&				regs() { return _regs; }
-	void					mode(GPIO_REGS::pin_fun f) {_regs.setFSEL(f);}
-	void					write(GPIO_REGS::pin_level s) { s==GPIO_REGS::pin_level::hight?_regs.setSET(GPIO_REGS::output_set::setOut): _regs.setCLR(GPIO_REGS::output_clr::clearOut); }
-	GPIO_REGS::pin_level	read()const { return _regs.getLEV(); }
+					gpio_p() :_regs(gpio_regs<p>::instance()) {}
+					gpio_p(mode f) :_regs(gpio_regs<p>::instance()) {setmode(f);}
+	void			setmode(mode f){_regs.setFSEL(f);}
+	gpio_regs<p>&	regs() { return _regs; }
+	void			write(level s) { s==level::hight?_regs.setSET(output::set): _regs.setCLR(output::set); }
+	level			read()const { return _regs.getLEV(); }
 private:
-	static pinregs<p> &_regs;
+	gpio_regs<p> &_regs;
 };
+
+
 
 #define DEF53(macro) 	macro(0)  macro(1)  macro(2)  macro(3)  macro(4)  macro(5)  macro(6)  macro(7) \
 						macro(8)  macro(9)  macro(10) macro(11) macro(12) macro(13) macro(14) macro(15)\
@@ -124,15 +126,17 @@ private:
 						macro(40) macro(41) macro(42) macro(43) macro(44) macro(45) macro(46) macro(47)\
 						macro(48) macro(49) macro(50) macro(51) macro(52) macro(53)
 
+#define __CLOSE_DEF__
 
-class pin
+class gpio_pin
 {
 public:
-	pin(pinN p);
-	void setFSEL(GPIO_REGS::pin_fun f);
-
+					gpio_pin(pinN p);
+					gpio_pin(pinN p, mode);
+	void			setmode(mode);
+	void			write(level s);
+	level			read()const;
 private:
-	const pinN	pn;
+	const pinN	pn_;
 };
-
 }
