@@ -11,83 +11,83 @@ gpio_regs<p> &gpio_regs<p>::instance()
 }
 
 #define PIN_GET_FSEL(n) template<>mode gpio_regs<pinN::p##n>::getFSEL()const \
-						{return regs.GPFSEL.FSEL##n;}
+						{return regs_.GPFSEL.fld.p##n;}
 #define PIN_GET_SET(n) template<>output gpio_regs<pinN::p##n>::getSET()const\
-						{return regs.GPSET.SET##n;}
+						{return regs_.GPSET.fld.p##n;}
 #define PIN_GET_CLR(n) template<>output gpio_regs<pinN::p##n>::getCLR()const\
-						{return regs.GPCLR.CLR##n;}
+						{return regs_.GPCLR.fld.p##n;}
 #define PIN_GET_LEV(n) template<>level gpio_regs<pinN::p##n>::getLEV()const\
-						{return regs.GPLEV.LEV##n;}
+						{return regs_.GPLEV.fld.p##n;}
 #define PIN_GET_EDS(n) template<>event gpio_regs<pinN::p##n>::getEDS()const\
-						{return regs.GPEDS.EDS##n;}
+						{return regs_.GPEDS.fld.p##n;}
 #define PIN_GET_REN(n) template<>status gpio_regs<pinN::p##n>::getREN()const\
-						{return regs.GPREN.REN##n;}
+						{return regs_.GPREN.fld.p##n;}
 #define PIN_GET_FEN(n) template<>status gpio_regs<pinN::p##n>::getFEN()const\
-						{return regs.GPFEN.FEN##n;}
+						{return regs_.GPFEN.fld.p##n;}
 #define PIN_GET_HEN(n) template<>status gpio_regs<pinN::p##n>::getHEN()const\
-						{return regs.GPHEN.HEN##n;}
+						{return regs_.GPHEN.fld.p##n;}
 #define PIN_GET_LEN(n) template<>status gpio_regs<pinN::p##n>::getLEN()const\
-						{return regs.GPLEN.LEN##n;}
+						{return regs_.GPLEN.fld.p##n;}
 #define PIN_GET_AREN(n) template<>status gpio_regs<pinN::p##n>::getAREN()const\
-						{return regs.GPAREN.AREN##n;}
+						{return regs_.GPAREN.fld.p##n;}
 #define PIN_GET_AFEN(n) template<>status gpio_regs<pinN::p##n>::getAFEN()const\
-						{return regs.GPAFEN.AFEN##n;}
+						{return regs_.GPAFEN.fld.p##n;}
 #define PIN_GET_PUDCLK(n) template<>clock gpio_regs<pinN::p##n>::getPUDCLK()const\
-						{return regs.GPPUDCLK.PUDCLK##n;}
+						{return regs_.GPPUDCLK.fld.p##n;}
 
 #define PIN_GET_ALL(n) PIN_GET_FSEL(n) PIN_GET_SET(n) PIN_GET_CLR(n) PIN_GET_LEV(n) PIN_GET_EDS(n) PIN_GET_REN(n) \
 		PIN_GET_FEN(n) PIN_GET_HEN(n) PIN_GET_LEN(n) PIN_GET_AREN(n) PIN_GET_AFEN(n) PIN_GET_PUDCLK(n)
 
 #define PIN_SET_FSEL(n) template<> void gpio_regs<pinN::p##n>::setFSEL(mode p) \
-						{regs.GPFSEL.FSEL##n=p;}
+						{regs_.GPFSEL.fld.p##n=p;}
 #define PIN_SET_SET(n) template<> void gpio_regs<pinN::p##n>::setSET(output p)\
-						{regs.GPSET.SET##n=p;}
+						{regs_.GPSET.fld.p##n=p;}
 #define PIN_SET_CLR(n) template<> void gpio_regs<pinN::p##n>::setCLR(output p)\
-						{regs.GPCLR.CLR##n=p;}
+						{regs_.GPCLR.fld.p##n=p;}
 #define PIN_SET_LEV(n) template<> void gpio_regs<pinN::p##n>::setLEV(level p)\
-						{regs.GPLEV.LEV##n=p;}
+						{regs_.GPLEV.fld.p##n=p;}
 #define PIN_SET_EDS(n) template<> void gpio_regs<pinN::p##n>::setEDS(event p)\
-						{regs.GPEDS.EDS##n=p;}
+						{regs_.GPEDS.fld.p##n=p;}
 #define PIN_SET_REN(n) template<> void gpio_regs<pinN::p##n>::setREN(status p)\
-						{regs.GPREN.REN##n=p;}
+						{regs_.GPREN.fld.p##n=p;}
 #define PIN_SET_FEN(n) template<> void gpio_regs<pinN::p##n>::setFEN(status p)\
-						{regs.GPFEN.FEN##n=p;}
+						{regs_.GPFEN.fld.p##n=p;}
 #define PIN_SET_HEN(n) template<> void gpio_regs<pinN::p##n>::setHEN(status p)\
-						{regs.GPHEN.HEN##n=p;}
+						{regs_.GPHEN.fld.p##n=p;}
 #define PIN_SET_LEN(n) template<> void gpio_regs<pinN::p##n>::setLEN(status p)\
-						{regs.GPLEN.LEN##n=p;}
+						{regs_.GPLEN.fld.p##n=p;}
 #define PIN_SET_AREN(n) template<> void gpio_regs<pinN::p##n>::setAREN(status p)\
-						{regs.GPAREN.AREN##n=p;}
+						{regs_.GPAREN.fld.p##n=p;}
 #define PIN_SET_AFEN(n) template<> void gpio_regs<pinN::p##n>::setAFEN(status p)\
-						{regs.GPAFEN.AFEN##n=p;}
+						{regs_.GPAFEN.fld.p##n=p;}
 #define PIN_SET_PUDCLK(n) template<> void gpio_regs<pinN::p##n>::setPUDCLK(clock p)\
-						{regs.GPPUDCLK.PUDCLK##n=p;}
+						{regs_.GPPUDCLK.fld.p##n=p;}
 
 
 #define PIN_SET_FSEL(n) template<> void gpio_regs<pinN::p##n>::setFSEL(mode p) \
-						{regs.GPFSEL.FSEL##n=p;}
+						{regs_.GPFSEL.fld.p##n=p;}
 #define PIN_SET_SET(n) template<> void gpio_regs<pinN::p##n>::setSET(output p)\
-						{regs.GPSET.SET##n=p;}
+						{regs_.GPSET.fld.p##n=p;}
 #define PIN_SET_CLR(n) template<> void gpio_regs<pinN::p##n>::setCLR(output p)\
-						{regs.GPCLR.CLR##n=p;}
+						{regs_.GPCLR.fld.p##n=p;}
 #define PIN_SET_LEV(n) template<> void gpio_regs<pinN::p##n>::setLEV(level p)\
-						{regs.GPLEV.LEV##n=p;}
+						{regs_.GPLEV.fld.p##n=p;}
 #define PIN_SET_EDS(n) template<> void gpio_regs<pinN::p##n>::setEDS(event p)\
-						{regs.GPEDS.EDS##n=p;}
+						{regs_.GPEDS.fld.p##n=p;}
 #define PIN_SET_REN(n) template<> void gpio_regs<pinN::p##n>::setREN(status p)\
-						{regs.GPREN.REN##n=p;}
+						{regs_.GPREN.fld.p##n=p;}
 #define PIN_SET_FEN(n) template<> void gpio_regs<pinN::p##n>::setFEN(status p)\
-						{regs.GPFEN.FEN##n=p;}
+						{regs_.GPFEN.fld.p##n=p;}
 #define PIN_SET_HEN(n) template<> void gpio_regs<pinN::p##n>::setHEN(status p)\
-						{regs.GPHEN.HEN##n=p;}
+						{regs_.GPHEN.fld.p##n=p;}
 #define PIN_SET_LEN(n) template<> void gpio_regs<pinN::p##n>::setLEN(status p)\
-						{regs.GPLEN.LEN##n=p;}
+						{regs_.GPLEN.fld.p##n=p;}
 #define PIN_SET_AREN(n) template<> void gpio_regs<pinN::p##n>::setAREN(status p)\
-						{regs.GPAREN.AREN##n=p;}
+						{regs_.GPAREN.fld.p##n=p;}
 #define PIN_SET_AFEN(n) template<> void gpio_regs<pinN::p##n>::setAFEN(status p)\
-						{regs.GPAFEN.AFEN##n=p;}
+						{regs_.GPAFEN.fld.p##n=p;}
 #define PIN_SET_PUDCLK(n) template<> void gpio_regs<pinN::p##n>::setPUDCLK(clock p)\
-						{regs.GPPUDCLK.PUDCLK##n=p;}
+						{regs_.GPPUDCLK.fld.p##n=p;}
 
 #define PIN_SET_ALL(n) PIN_SET_FSEL(n) PIN_SET_SET(n) PIN_SET_CLR(n) PIN_SET_LEV(n) PIN_SET_EDS(n) PIN_SET_REN(n) \
 		PIN_SET_FEN(n) PIN_SET_HEN(n) PIN_SET_LEN(n) PIN_SET_AREN(n) PIN_SET_AFEN(n) PIN_SET_PUDCLK(n)

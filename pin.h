@@ -97,9 +97,9 @@ public:
 	void setPUDCLK(clock);
 private:
 	//bcm2835&		bcm;
-	GPIO::fields	&regs;
+	volatile GPIO	&regs_;
 
-	gpio_regs():regs(bcm2835::instance().registers().FIELDS) {};
+	gpio_regs():regs_(bcm2835::instance().registers()) {};
 };
 
 template<pinN p>

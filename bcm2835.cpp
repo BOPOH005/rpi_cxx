@@ -14,7 +14,6 @@
 #include <cerrno>
 #include <cstring>
 
-
 namespace rpi_cxx {
 static const size_t RASPBERRY_PI_PERI_BASE(0x3F000000);
 static const size_t GPIO_BASE(RASPBERRY_PI_PERI_BASE+0x200000);
@@ -63,7 +62,7 @@ bcm2835& bcm2835::instance()
 	return bcm;
 }
 
-GPIO& bcm2835::registers()
+volatile GPIO& bcm2835::registers()
 {
 	return *static_cast<GPIO*>(p_map_.get());
 }
