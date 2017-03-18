@@ -8,13 +8,6 @@
 
 
 using namespace rpi_cxx;
-// template<class T>
-// void* TestAdressGPIO(T m)
-// {
-// 	GPIO::fields r = {};
-// 	return (char*)0x7E200000+(size_t)(reinterpret_cast<char*>(&(r.*m)) - reinterpret_cast<char*>(&r));
-// }
-
 
 TEST(GPIO, TestSizeofGPIO)
 {
@@ -24,26 +17,13 @@ TEST(GPIO, TestSizeofGPIO)
 TEST(GPIO,TestGPFSEL)
 {
 	ASSERT_EQ(offsetof(GPIO, GPFSEL), 0x7E200000-0x7E200000);
-	ASSERT_EQ(offsetof(GPIO::gpfsel, fld), 0x7E200000-0x7E200000);
-	ASSERT_EQ(offsetof(GPIO::gpfsel, reg), 0x7E200000-0x7E200000);
-	
-	// ASSERT_EQ((std::size_t) &(((GPIO::gpfsel*)0)->reg.r0)), 0x7E200000-0x7E200000);
-	// ASSERT_EQ((std::size_t) &(((GPIO::gpfsel*)0)->reg.r1)), 0x7E200008-0x7E200000);
-	// ASSERT_EQ((std::size_t) &(((GPIO::gpfsel*)0)->reg.r1)), 0x7E200010-0x7E200000);
-
-	// ASSERT_EQ(TestAdressGPIO(&GPIO::fields::GPFSEL),(void*)0x7E200000);
-	// ASSERT_EQ(TestAdressGPIOR(&GPIO::regs::GPFSEL1),(void*)0x7E200000);
-	// ASSERT_EQ(TestAdressGPIOR(&GPIO::regs::GPFSEL2),(void*)0x7E200008);
-	// ASSERT_EQ(TestAdressGPIOR(&GPIO::regs::GPFSEL3),(void*)0x7E200010);
 }
+
 TEST(GPIO,TestGPSET)
 {
 	ASSERT_EQ(offsetof(GPIO, GPSET), 0x7E20001C-0x7E200000);
-	
-
-	// ASSERT_EQ(TestAdressGPIO(&GPIO::fields::GPSET),(void*)0x7E20001C);
-	// ASSERT_EQ(TestAdressGPIOR(&GPIO::regs::GPSET),(void*)0x7E20001C);
 }
+
 TEST(GPIO,TestGPCLR)
 {
 	ASSERT_EQ(offsetof(GPIO,GPCLR),0x7E200028-0x7E200000);
@@ -51,13 +31,6 @@ TEST(GPIO,TestGPCLR)
 TEST(GPIO,TestGPLEV)
 {
 	ASSERT_EQ(offsetof(GPIO,GPLEV),0x7E200034-0x7E200000);
-	ASSERT_EQ(offsetof(GPIO::gplev,fld),0);
-	ASSERT_EQ(offsetof(GPIO::gplev,reg),0);
-
-	bcm2835& bcm=bcm2835::instance();
-	volatile GPIO &gpio=bcm.registers();
-	ASSERT_EQ( (volatile void*)&gpio.GPLEV.reg, (volatile void*)&gpio.GPLEV.fld); 
-
 }
 TEST(GPIO,TestGPEDS)
 {
@@ -96,17 +69,15 @@ TEST(GPIO,TestGPPUDCLK)
 	ASSERT_EQ(offsetof(GPIO,GPPUDCLK),0x7E200098-0x7E200000);
 }
 
-// // TEST(PIN,InitPIN)
-// // {
-// // 	ASSERT_THROW(gpio_regs<pinN::p0>::instance(), std::runtime_error);
-// // }
+TEST(PIN,InitPIN)
+{
+	ASSERT_THROW(gpio_regs<pinN::p0>::instance(), std::runtime_error);
+}
 
-// // TEST(PIN, DynamicPIN)
-// // {
-// // 	ASSERT_THROW(gpio_pin p(pinN::p0), std::runtime_error);
-// // }
-
-
+TEST(PIN, DynamicPIN)
+{
+	ASSERT_THROW(gpio_pin p(pinN::p0), std::runtime_error);
+}
 
 TEST(PIN, TestSpeed)
 {

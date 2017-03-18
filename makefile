@@ -25,11 +25,16 @@ rpi_cxx.o: rpi_cxx.cpp
 pin.o: pin.cpp		
 	$(COMPILER) $(C_OPT) -MFout/pin.d -MTout/pin.d -o out/pin.o pin.cpp
 
-rpi_cxx: rpi_cxx.o pin.o
-	$(LINKER) -r "out/librpi_cxx.a" out/rpi_cxx.o out/pin.o
+bcm2835.o: bcm2835.cpp		
+	$(COMPILER) $(C_OPT) -MFout/bcm2835.d -MTout/bcm2835.d -o out/bcm2835.o bcm2835.cpp
+	
+rpi_cxx: rpi_cxx.o pin.o bcm2835.o
+	$(LINKER) -r "out/librpi_cxx.a" out/rpi_cxx.o out/pin.o out/bcm2835.o
 
 unit_tests.o:
 	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MFout/Sources.d -MTout/Sources.d -o ./out/Sources.o ./unit_tests/Source.cpp
 
 unit_tests: rpi_cxx unit_tests.o
 	$(COMPILER) -L./out $(C_LIB) $(GOOGLE_LIB) -o "out/unit_tests" ./out/Sources.o -lpthread -lgoogletest -lrpi_cxx
+
+	
