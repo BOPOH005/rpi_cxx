@@ -25,6 +25,8 @@ TEST(GPIO,TestGPFSEL)
 {
 	ASSERT_EQ(offsetof(GPIO, GPFSEL), 0x7E200000-0x7E200000);
 	ASSERT_EQ(offsetof(GPIO::gpfsel, fld), 0x7E200000-0x7E200000);
+	ASSERT_EQ(offsetof(GPIO::gpfsel, reg), 0x7E200000-0x7E200000);
+	
 	// ASSERT_EQ((std::size_t) &(((GPIO::gpfsel*)0)->reg.r0)), 0x7E200000-0x7E200000);
 	// ASSERT_EQ((std::size_t) &(((GPIO::gpfsel*)0)->reg.r1)), 0x7E200008-0x7E200000);
 	// ASSERT_EQ((std::size_t) &(((GPIO::gpfsel*)0)->reg.r1)), 0x7E200010-0x7E200000);
@@ -38,6 +40,7 @@ TEST(GPIO,TestGPSET)
 {
 	ASSERT_EQ(offsetof(GPIO, GPSET), 0x7E20001C-0x7E200000);
 	
+
 	// ASSERT_EQ(TestAdressGPIO(&GPIO::fields::GPSET),(void*)0x7E20001C);
 	// ASSERT_EQ(TestAdressGPIOR(&GPIO::regs::GPSET),(void*)0x7E20001C);
 }
@@ -48,6 +51,13 @@ TEST(GPIO,TestGPCLR)
 TEST(GPIO,TestGPLEV)
 {
 	ASSERT_EQ(offsetof(GPIO,GPLEV),0x7E200034-0x7E200000);
+	ASSERT_EQ(offsetof(GPIO::gplev,fld),0);
+	ASSERT_EQ(offsetof(GPIO::gplev,reg),0);
+
+	bcm2835& bcm=bcm2835::instance();
+	volatile GPIO &gpio=bcm.registers();
+	ASSERT_EQ( (volatile void*)&gpio.GPLEV.reg, (volatile void*)&gpio.GPLEV.fld); 
+
 }
 TEST(GPIO,TestGPEDS)
 {
@@ -98,57 +108,61 @@ TEST(GPIO,TestGPPUDCLK)
 
 
 
-// TEST(PIN, TestSpeed)
-// {
-// // 	gpio_pin p[]={
-// // #define DEF_PIN_N(n) pinN::p##n,
-// // 			DEF53(DEF_PIN_N)
-// // 			pinN::p0
-// // 			};
+TEST(PIN, TestSpeed)
+{
+	#define DEF23(macro) 	macro(0)  macro(1)  macro(2)  macro(3)  macro(4)  macro(5)  macro(6)  macro(7) \
+						macro(8)  macro(9)  macro(10) macro(11) macro(12) macro(13) macro(14) macro(15)\
+						macro(16) macro(17) macro(18) macro(19) macro(20) macro(21) macro(22) macro(23)
 
-// // #define DEF_PINREGS(n) auto sp##n=gpio_regs<pinN::p##n>::instance();
-// // 	DEF53(DEF_PINREGS)
+	gpio_pin p[]={
+#define DEF_PIN_N(n) pinN::p##n,
+			DEF23(DEF_PIN_N)
+			pinN::p0
+			};
 
-// 	const size_t count=1000000000;
+// #define DEF_PINREGS(n) auto sp##n=gpio_regs<pinN::p##n>::instance();
+// 	DEF53(DEF_PINREGS)
 
-// // 	auto t1=std::chrono::high_resolution_clock::now();
-// //  	for(size_t i=0; i<count; ++i){
-// //  #define SET_FSEL_1(n) p[n].setmode(mode::out);
-// //  		DEF53(SET_FSEL_1)
-// //  		}
-// 	auto regs=bcm2835::instance().registers().FIELDS;
-// 	unsigned *GPFSEL = reinterpret_cast<unsigned*> (&regs);
-// 	auto t2=std::chrono::high_resolution_clock::now();
+	const size_t count=100000;
 
-// 	for(size_t i=0; i<count; ++i)
-// 	{
+	auto t1=std::chrono::high_resolution_clock::now();
+ 	for(size_t i=0; i<count; ++i){
+ #define SET_FSEL_1(n) p[n].setmode(mode::out);
+ 		DEF23(SET_FSEL_1)
+ 		}
+	auto &regs=bcm2835::instance().registers();
+	volatile unsigned *GPFSEL = reinterpret_cast<volatile unsigned*> (&regs.GPFSEL);
+	auto t2=std::chrono::high_resolution_clock::now();
+
+	for(size_t i=0; i<count; ++i)
+	{
 #define SET_FSEL_3(n) {	 int reg      =  n/10;\
 		int offset = (n % 10) * 3;\
 		GPFSEL[reg] &= ~((0b111 & ~0b001) << offset);\
 		GPFSEL[reg] |= ((0b111 & 0b000) << offset); }
-// 		DEF53(SET_FSEL_3)
-// 	}
-// 	auto t4=std::chrono::high_resolution_clock::now();
+		DEF23(SET_FSEL_3)
+	}
+	auto t4=std::chrono::high_resolution_clock::now();
 
-// 	for(size_t i=0; i<count; ++i){
-// #define SET_FSEL_4(n) regs.GPFSEL.fld.f##n=mode::out;
-// //sp##n.setFSEL(mode::out);
-// 		DEF53(SET_FSEL_4)
-// 		}
-// 	auto t5=std::chrono::high_resolution_clock::now();
+	for(size_t i=0; i<count; ++i){
+#define SET_FSEL_4(n) regs.GPFSEL.fld.p##n=mode::out;
+					  //sp##n.setFSEL(mode::out);
+		DEF23(SET_FSEL_4)
+		}
+	auto t5=std::chrono::high_resolution_clock::now();
 
-// //	auto d1 =(t2-t1).count();
-// 	auto d2 = (t4-t2).count();
-// 	//auto d3 = (t4-t3).count();
-// 	auto d4 = (t5-t4).count();
-// 	std::cout << "gpio_regs<n>	=" << d4 << std::endl
-// 		<< "bit manual	=" << d2 << " more " << ((float)(d2 - d4) / (float)d4) * 100 << "%" << std::endl;
-// 	//	<< "switch	=" << d1 << " more " << ((float)(d1 - d4) / (float)d4) * 100 << "%" << std::endl;
-// //				<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
+	auto d1 =(t2-t1).count();
+	auto d2 = (t4-t2).count();
+	//auto d3 = (t4-t3).count();
+	auto d4 = (t5-t4).count();
+	std::cout << "GPFSEL.fld.p	=" << d4 << std::endl
+		<< "bit manual	=" << d2 << " more " << ((float)(d2 - d4) / (float)d4) * 100 << "%" << std::endl	
+		<< "switch   	=" << d1 << " more " << ((float)(d1 - d4) / (float)d4) * 100 << "%" << std::endl;
+		//		<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
 
 
-// 	ASSERT_TRUE( /*d4<=d1 &&*/  d4<=d2 );
-// }
+	ASSERT_TRUE( d4<=d1 &&  d4<=d2 );
+}
 
 std::ostream &operator<<(std::ostream &os, const mode s)
 {
@@ -198,7 +212,7 @@ std::ostream &operator<<(std::ostream &os, const volatile GPIO::gpfsel &s)
 std::ostream &operator<<(std::ostream &os, const volatile GPIO::gplev &s)
 {
 	return os 	<< "GPLEVS" << std::endl
-		<< std::oct << std::setfill('0') << std::setw(22) << s.reg << std::endl
+		<< std::oct << std::setfill('0') << std::setw(64) << std::bitset<64>(s.reg) << std::endl
 		<<"	|0	|1	|2	|3	|4	|5	|6	|7	|8	|9	|" << std::endl
 		<<"0	|"<< s.fld.p0 << "	|"<< s.fld.p1 << "	|"<< s.fld.p2 << "	|"<< s.fld.p3 << "	|"<< s.fld.p4 << "	|"<< s.fld.p5 << "	|"<< s.fld.p6 << "	|"<< s.fld.p7 << "	|"<< s.fld.p8 << "	|"<< s.fld.p9 << "	|"<< std::endl
 		<<"1	|"<< s.fld.p10 << "	|"<< s.fld.p11 << "	|"<< s.fld.p12 << "	|"<< s.fld.p13 << "	|"<< s.fld.p14 << "	|"<< s.fld.p15 << "	|"<< s.fld.p16 << "	|"<< s.fld.p17 << "	|"<< s.fld.p18 << "	|"<< s.fld.p19 << "	|"<< std::endl
@@ -216,21 +230,16 @@ TEST(PIN, bcmBlink)
 		volatile GPIO &gpio=bcm.registers();
 		gpio.GPFSEL.fld.p18=mode::out;
 
-		std::cout 	<< gpio.GPFSEL << std::endl;
+		for(int i=3; i>0; --i)
+		{
+			gpio.GPSET.fld.p18=true;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			EXPECT_TRUE(gpio.GPLEV.fld.p18 == level::hight);
 
-		gpio.GPSET.fld.p18=output::set;
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		
-		std::cout << gpio.GPLEV << std::endl;	
-		ASSERT_TRUE(gpio.GPLEV.fld.p18 == level::hight);
-		
-		gpio.GPCLR.fld.p18=output::set;
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-		std::cout << gpio.GPLEV << std::endl;
-		ASSERT_TRUE(gpio.GPLEV.fld.p18 == level::low);
-
-
+			gpio.GPCLR.fld.p18=true;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			EXPECT_TRUE(gpio.GPLEV.fld.p18 == level::low);
+		}
 	}
 	catch (std::runtime_error err)
 	{
@@ -243,62 +252,58 @@ TEST(PIN, bcmBlink)
 }
 
 
-// TEST(PIN, Blink)
-// {
-// 	try
-// 	{
-// 		gpio_p<pinN::p18> p(mode::out);
-
-// 		p.write(level::hight);
-// 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-// 		ASSERT_TRUE(p.read() == level::hight);
-// 		p.write(level::low);
-// 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-// 		ASSERT_TRUE(p.read() == level::low);
-
-
-// 	}
-// 	catch (std::runtime_error err)
-// 	{
-// 		FAIL() << "Ошибка! Проверте запуск с sudo";
-// 	}
-// 	catch(...)
-// 	{
-// 		FAIL() << "Нeизвестное исключение";
-// 	}
-// }
-
-// TEST(CPP, bitMap)
-// {
-// 	foo f ={0b00101011};
-
-// 	std::cout 	<< "foo(" << std::bitset<8>(f.a) << "):" << std::endl
-// 				<<"0	|1	|2	|3	|4	|5	|6	|7	|" << std::endl
-// 				<< f.b.l0 << "	|" << f.b.l1 << "	|"<< f.b.l2<< "	|" << f.b.l3 << "	|"<< f.b.l4 << "	|"<< f.b.l5 << "	|"<< f.b.l6 << "	|"<< f.b.l7<< "	|" << std::endl; 
-// 	ASSERT_TRUE(f.a==0b00101011);
-// 	ASSERT_TRUE(f.b.l0==level::hight);
-// 	ASSERT_TRUE(f.b.l1==level::hight);
-// 	ASSERT_TRUE(f.b.l2==level::low);
-// 	ASSERT_TRUE(f.b.l3==level::hight);
-// }
-
-TEST(CPP, bitGPIO_REGS)
+TEST(PIN, Blink)
 {
-	u_int64_t m[3]={0b1010101010111110101100011010001000,0b110110110110110111110101100011010001000,0b100100100100100111110101100011010001000};
-	const GPIO &s=*(GPIO*)m;
-	GPIO s2=s;
+	try
+	{
+		gpio_p<pinN::p18> p(mode::out);
 
-	std::cout 	<< s.GPFSEL << std::endl 
-				<< s2.GPFSEL << std::endl;
-				
-	ASSERT_TRUE(s.GPFSEL.fld.p0==mode::in);
-	ASSERT_TRUE(s.GPFSEL.fld.p1==mode::out);
-	ASSERT_TRUE(s.GPFSEL.fld.p2==mode::fun5);
-	ASSERT_TRUE(s.GPFSEL.fld.p3==mode::fun4);
-	ASSERT_TRUE(s.GPFSEL.fld.p4==mode::fun0);
-	ASSERT_TRUE(s.GPFSEL.fld.p5==mode::fun1);
-	ASSERT_TRUE(s.GPFSEL.fld.p6==mode::fun2);
-	ASSERT_TRUE(s.GPFSEL.fld.p7==mode::fun3);
+		for(int i=3; i>0; --i)
+		{
+			p.write(level::hight);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			EXPECT_TRUE(p.read() == level::hight);
+			p.write(level::low);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			EXPECT_TRUE(p.read() == level::low);
+		}
+
+	}
+	catch (std::runtime_error err)
+	{
+		FAIL() << "Ошибка! Проверте запуск с sudo";
+	}
+	catch(...)
+	{
+		FAIL() << "Нeизвестное исключение";
+	}
+}
+
+TEST(PIN, pinBlink)
+{
+	try
+	{
+		gpio_pin p(pinN::p18, mode::out);
+		
+		for(int i=3; i>0; --i)
+		{
+			p.write(level::hight);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			EXPECT_TRUE(p.read() == level::hight);
+			p.write(level::low);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			EXPECT_TRUE(p.read() == level::low);
+		}
+
+	}
+	catch (std::runtime_error err)
+	{
+		FAIL() << "Ошибка! Проверте запуск с sudo";
+	}
+	catch(...)
+	{
+		FAIL() << "Нeизвестное исключение";
+	}
 }
 
 

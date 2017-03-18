@@ -21,7 +21,7 @@ static const size_t BLOCK_SIZE(4*1024);
 
 bcm2835::bcm2835()
 {
-	auto file=open("/dev/mem", O_RDWR | O_SYNC);
+	auto file=open("/dev/gpiomem", O_RDWR | O_SYNC);
 	mem_fd_.reset(file);
 	if ( mem_fd_.get() < 0 ) {
 		static const std::string err(std::strerror(errno)+std::string(" /Failed to open /dev/mem"));
@@ -64,7 +64,7 @@ bcm2835& bcm2835::instance()
 
 volatile GPIO& bcm2835::registers()
 {
-	return *static_cast<GPIO*>(p_map_.get());
+	return *static_cast<volatile GPIO*>(p_map_.get());
 }
 
 } /* namespace rpi_cxx */

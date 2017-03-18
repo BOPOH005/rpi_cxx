@@ -71,8 +71,6 @@ public:
 	static gpio_regs<p> &instance();
 
 	mode 	getFSEL()const;
-	output	getSET()const;
-	output	getCLR()const;
 	level	getLEV()const;
 	event	getEDS()const;
 	status	getREN()const;
@@ -84,9 +82,8 @@ public:
 	clock	getPUDCLK()const;
 
 	void setFSEL(mode);
-	void setSET(output);
-	void setCLR(output);
-	void setLEV(level);
+	void setSET();
+	void setCLR();
 	void setEDS(event);
 	void setREN(status);
 	void setFEN(status);
@@ -110,7 +107,7 @@ public:
 					gpio_p(mode f) :_regs(gpio_regs<p>::instance()) {setmode(f);}
 	void			setmode(mode f){_regs.setFSEL(f);}
 	gpio_regs<p>&	regs() { return _regs; }
-	void			write(level s) { s==level::hight?_regs.setSET(output::set): _regs.setCLR(output::set); }
+	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
 	level			read()const { return _regs.getLEV(); }
 private:
 	gpio_regs<p> &_regs;

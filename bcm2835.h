@@ -33,11 +33,7 @@ struct fcloser
 
 struct mcloser	{ void operator()(void* p);};
 
-#ifdef __GNUC__
-enum /*class*/ mode /* : u_char*/ // warning gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51242
-#else
-enum class mode : u_char
-#endif
+enum  mode
 {
 	in	=0b000,
 	out	=0b001,
@@ -49,35 +45,31 @@ enum class mode : u_char
 	fun5=0b010
 };
 
-enum class output: bool
-{
-	no_effect=0x0,
-	set		=0x1
-};
+// enum  set
+// {
+// 	no_effect	=0x0,
+// 	on			=0x1
+// };
 
-enum class level: bool
+enum  level 
 {
 	low		=0x0,
 	hight	=0x1
 };
 
-enum class event: bool
+enum  event
 {
 	not_detected	=0x0,
 	detected		=0x1
 };
 
-enum class status: bool
+enum  status
 {
 	disable = 0x0,
 	on 		= 0x1
 };
 
-#ifdef __GNUC__
-enum /*class*/ pull /*:u_char*/ // warning gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51242
-#else
-enum class pull :u_char
-#endif
+enum pull
 {
 	off 		= 0x0, // disable pull-up/down
 	down 		= 0x1, // Enable Pull Down control
@@ -85,14 +77,14 @@ enum class pull :u_char
 	reserved	= 0x3  // Reserved
 };
 
-enum class clock: bool
+enum clock
 {
 	no_effect	= 0x0,
 	assert		= 0x1
 };
 
-//#pragma pack(push,1)
-struct  __attribute__((packed, aligned(4))) GPIO
+//#pragma pack(push,4)
+struct   GPIO
 {
 	// typedef struct  
 	// {
@@ -202,138 +194,78 @@ struct  __attribute__((packed, aligned(4))) GPIO
 			unsigned            : 20;
 		} fld;
 	} GPFSEL;
-	unsigned			:32;
-	union __attribute__((packed, aligned(4))) gpset
+	unsigned 			:32;
+	union __attribute__((packed, aligned(4))) gpsetclr
 	{
 		u_int64_t reg;
 		struct 
 		{
-			output p0       : 1;
-			output p1       : 1;
-			output p2       : 1;
-			output p3       : 1;
-			output p4       : 1;
-			output p5       : 1;
-			output p6       : 1;
-			output p7       : 1;
-			output p8       : 1;
-			output p9       : 1;
-			output p10      : 1;
-			output p11      : 1;
-			output p12      : 1;
-			output p13      : 1;
-			output p14      : 1;
-			output p15      : 1;
-			output p16      : 1;
-			output p17      : 1;
-			output p18      : 1;
-			output p19      : 1;
-			output p20      : 1;
-			output p21      : 1;
-			output p22      : 1;
-			output p23      : 1;
-			output p24      : 1;
-			output p25      : 1;
-			output p26      : 1;
-			output p27      : 1;
-			output p28      : 1;
-			output p29      : 1;
-			output p30      : 1;
-			output p31      : 1;
-			output p32       : 1;
-			output p33       : 1;
-			output p34       : 1;
-			output p35       : 1;
-			output p36       : 1;
-			output p37       : 1;
-			output p38       : 1;
-			output p39       : 1;
-			output p40       : 1;
-			output p41       : 1;
-			output p42       : 1;
-			output p43       : 1;
-			output p44       : 1;
-			output p45       : 1;
-			output p46       : 1;
-			output p47       : 1;
-			output p48       : 1;
-			output p49       : 1;
-			output p50       : 1;
-			output p51       : 1;
-			output p52       : 1;
-			output p53       : 1;
+			bool p0       : 1;
+			bool p1       : 1;
+			bool p2       : 1;
+			bool p3       : 1;
+			bool p4       : 1;
+			bool p5       : 1;
+			bool p6       : 1;
+			bool p7       : 1;
+			bool p8       : 1;
+			bool p9       : 1;
+			bool p10      : 1;
+			bool p11      : 1;
+			bool p12      : 1;
+			bool p13      : 1;
+			bool p14      : 1;
+			bool p15      : 1;
+			bool p16      : 1;
+			bool p17      : 1;
+			bool p18      : 1;
+			bool p19      : 1;
+			bool p20      : 1;
+			bool p21      : 1;
+			bool p22      : 1;
+			bool p23      : 1;
+			bool p24      : 1;
+			bool p25      : 1;
+			bool p26      : 1;
+			bool p27      : 1;
+			bool p28      : 1;
+			bool p29      : 1;
+			bool p30      : 1;
+			bool p31      : 1;
+			bool p32       : 1;
+			bool p33       : 1;
+			bool p34       : 1;
+			bool p35       : 1;
+			bool p36       : 1;
+			bool p37       : 1;
+			bool p38       : 1;
+			bool p39       : 1;
+			bool p40       : 1;
+			bool p41       : 1;
+			bool p42       : 1;
+			bool p43       : 1;
+			bool p44       : 1;
+			bool p45       : 1;
+			bool p46       : 1;
+			bool p47       : 1;
+			bool p48       : 1;
+			bool p49       : 1;
+			bool p50       : 1;
+			bool p51       : 1;
+			bool p52       : 1;
+			bool p53       : 1;
 			unsigned               : 10;
 		}fld;
 	} GPSET;
 	unsigned			:32;
-	union __attribute__((packed, aligned(4))) gpclr
-	{
-		u_int64_t reg;
-		struct 
-		{
-			output p0       : 1;
-			output p1       : 1;
-			output p2       : 1;
-			output p3       : 1;
-			output p4       : 1;
-			output p5       : 1;
-			output p6       : 1;
-			output p7       : 1;
-			output p8       : 1;
-			output p9       : 1;
-			output p10      : 1;
-			output p11      : 1;
-			output p12      : 1;
-			output p13      : 1;
-			output p14      : 1;
-			output p15      : 1;
-			output p16      : 1;
-			output p17      : 1;
-			output p18      : 1;
-			output p19      : 1;
-			output p20      : 1;
-			output p21      : 1;
-			output p22      : 1;
-			output p23      : 1;
-			output p24      : 1;
-			output p25      : 1;
-			output p26      : 1;
-			output p27      : 1;
-			output p28      : 1;
-			output p29      : 1;
-			output p30      : 1;
-			output p31      : 1;
-			output p32       : 1;
-			output p33       : 1;
-			output p34       : 1;
-			output p35       : 1;
-			output p36       : 1;
-			output p37       : 1;
-			output p38       : 1;
-			output p39       : 1;
-			output p40       : 1;
-			output p41       : 1;
-			output p42       : 1;
-			output p43       : 1;
-			output p44       : 1;
-			output p45       : 1;
-			output p46       : 1;
-			output p47       : 1;
-			output p48       : 1;
-			output p49       : 1;
-			output p50       : 1;
-			output p51       : 1;
-			output p52       : 1;
-			output p53       : 1;
-			unsigned               : 10;
-		} fld;
-	}GPCLR;
+	gpsetclr	GPCLR;
 	unsigned			:32;
-	union __attribute__((packed, aligned(4)))gplev
+	union __attribute__((packed, aligned(4))) gplev
 	{
 		u_int64_t reg;
-		struct 
+		struct levels
 		{
+//#define level unsigned
 			level p0       : 1;
 			level p1       : 1;
 			level p2       : 1;
@@ -389,10 +321,11 @@ struct  __attribute__((packed, aligned(4))) GPIO
 			level p52       : 1;
 			level p53       : 1;
 			unsigned	          : 10;
+//#undef level 
 		} fld;
-	}GPLEV;
+	} /*const*/ GPLEV;
 	unsigned			:32;
-	union gpeds
+	union __attribute__((packed, aligned(4))) gpeds
 	{
 		u_int64_t reg;
 		struct 
@@ -455,7 +388,7 @@ struct  __attribute__((packed, aligned(4))) GPIO
 		} fld;		
 	} GPEDS;
 	unsigned			:32;
-	union stats
+	union __attribute__((packed, aligned(4))) stats
 	{
 		u_int64_t reg;
 		struct
@@ -518,17 +451,17 @@ struct  __attribute__((packed, aligned(4))) GPIO
 		} fld;
 	} GPREN;
 	unsigned			: 32;
-	stats GPFEN;
+	stats  GPFEN;
 	unsigned			: 32;
-	stats GPHEN;
+	stats  GPHEN;
 	unsigned			: 32;
-	stats GPLEN;
+	stats  GPLEN;
 	unsigned			: 32;
-	stats GPAREN;
+	stats  GPAREN;
 	unsigned			: 32;
-	stats GPAFEN;
+	stats  GPAFEN;
 	unsigned			: 32;
-	union gppud
+	union __attribute__((packed, aligned(4))) gppud
 	{
 		u_int32_t reg;
 		struct //GPIO Pull-up/down Register (GPPUD) 
@@ -537,7 +470,7 @@ struct  __attribute__((packed, aligned(4))) GPIO
 			unsigned	: 30;
 		} fld;
 	} GPPUD;
-	union gppudclk
+	union __attribute__((packed, aligned(4))) gppudclk
 	{
 		u_int64_t reg;
 		struct
