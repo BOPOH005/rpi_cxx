@@ -1,6 +1,5 @@
 #pragma once
 #include "bcm2835.h"
-//#include <cassert>
 
 namespace rpi_cxx
 {

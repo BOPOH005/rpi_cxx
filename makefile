@@ -1,4 +1,8 @@
-.PHONY: all clean
+.PHONY: all clean work_dirs
+
+OBJ=./obj
+BIN=./bin
+LIB=./lib
 
 C_PATH=../tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
 C_LIB_PATH=$(C_PATH)/lib/gcc/arm-linux-gnueabihf/4.8.3
@@ -10,31 +14,36 @@ GOOGLE_INC=-I$(GOOGLE_PATH)/include
 GOOGLE_LIB=-L$(GOOGLE_PATH)/src/Default
 
 COMPILER=$(C_PATH)/arm-linux-gnueabihf-g++
-C_OPT=-std=c++1y -pthread $(C_INC) -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP 
+C_OPT=-std=c++1y -pthread $(C_INC) -O2 -g3 -Wall -c -fmessage-length=100 -MMD -MP 
 
 LINKER=$(C_PATH)/arm-linux-gnueabihf-ar
 
-all: rpi_cxx
+all: work_dirs $(BIN)/unit_tests
+
+work_dirs:
+	@if [ ! -d $(BIN) ] ; then mkdir -p $(BIN); fi 
+	@if [ ! -d $(OBJ) ] ; then mkdir -p $(OBJ); fi 
+	@if [ ! -d $(LIB) ] ; then mkdir -p $(LIB); fi 
 
 clean:
-	rm -rf out/*.*
+	rm -rf $(OBJ) $(OBJ) $(LIB)
 
-rpi_cxx.o: rpi_cxx.cpp		
-	$(COMPILER) $(C_OPT) -MFout/rpi_cxx.d -MTout/rpi_cxx.d -o out/rpi_cxx.o rpi_cxx.cpp
+$(OBJ)/rpi_cxx.o: rpi_cxx.cpp			
+	$(COMPILER) $(C_OPT) -MF$(OBJ)/rpi_cxx.d -MT$(OBJ)/rpi_cxx.d -o $@  $<
 
-pin.o: pin.cpp		
-	$(COMPILER) $(C_OPT) -MFout/pin.d -MTout/pin.d -o out/pin.o pin.cpp
+$(OBJ)/pin.o: pin.cpp		
+	$(COMPILER) $(C_OPT) -MF$(OBJ)/pin.d -MT$(OBJ)/pin.d -o $@ $<
 
-bcm2835.o: bcm2835.cpp		
-	$(COMPILER) $(C_OPT) -MFout/bcm2835.d -MTout/bcm2835.d -o out/bcm2835.o bcm2835.cpp
+$(OBJ)/bcm2835.o: bcm2835.cpp		
+	$(COMPILER) $(C_OPT) -MF$(OBJ)/bcm2835.d -MT$(OBJ)/bcm2835.d -o $@ $<
 	
-rpi_cxx: rpi_cxx.o pin.o bcm2835.o
-	$(LINKER) -r "out/librpi_cxx.a" out/rpi_cxx.o out/pin.o out/bcm2835.o
+$(LIB)/librpi_cxx.a: $(OBJ)/rpi_cxx.o $(OBJ)/pin.o $(OBJ)/bcm2835.o
+	$(LINKER) -r $@ $^
 
-unit_tests.o:
-	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MFout/Sources.d -MTout/Sources.d -o ./out/Sources.o ./unit_tests/Source.cpp
+$(OBJ)/Sources.o: ./unit_tests/Source.cpp
+	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MF$(OBJ)/Sources.d -MT$(OBJ)/Sources.d -o $@ ./unit_tests/Source.cpp
 
-unit_tests: rpi_cxx unit_tests.o
-	$(COMPILER) -L./out $(C_LIB) $(GOOGLE_LIB) -o "out/unit_tests" ./out/Sources.o -lpthread -lgoogletest -lrpi_cxx
+$(BIN)/unit_tests: $(LIB)/librpi_cxx.a $(OBJ)/Sources.o
+	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $(OBJ)/Sources.o -lpthread -lgoogletest -lrpi_cxx
 
-	
+include $(wildcard $(OBJ)/*.d)	
