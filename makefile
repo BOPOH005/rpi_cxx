@@ -31,7 +31,6 @@ clean:
 
 install:
 #scp $(BIN)/unit_tests $(BIN)/l1_leg  pi@46.138.165.255:~/projects
-	@echo '-> $(wildcard $(BIN)/*)'
 	scp $(wildcard $(BIN)/*)  pi@46.138.165.255:~/projects
 
 $(OBJ)/pin.o: pin.cpp		
@@ -49,12 +48,24 @@ $(OBJ)/Sources.o: ./unit_tests/Source.cpp
 $(BIN)/unit_tests: $(LIB)/librpi_cxx.a $(OBJ)/Sources.o
 	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $(OBJ)/Sources.o -lpthread -lgoogletest -lrpi_cxx
 
-examples: $(BIN)/l1_leg
+examples: $(BIN)/l1_leg $(BIN)/l2_abuzzer $(BIN)/l3_pbuzzer
 
 $(OBJ)/l1_leg.o: $(EXAMPLES)/l1_leg.cpp
 	$(COMPILER) $(C_OPT) -I./ -MF$(OBJ)/l1_leg.d -MT$(OBJ)/l1_leg.d -o $@ $<
 
 $(BIN)/l1_leg: $(OBJ)/l1_leg.o $(LIB)/librpi_cxx.a
+	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $< -lpthread -lrpi_cxx
+
+$(OBJ)/l2_abuzzer.o: $(EXAMPLES)/l2_abuzzer.cpp
+	$(COMPILER) $(C_OPT) -I./ -MF$(OBJ)/l2_abuzzer.d -MT$(OBJ)/l2_abuzzer.d -o $@ $<
+
+$(BIN)/l2_abuzzer: $(OBJ)/l2_abuzzer.o $(LIB)/librpi_cxx.a
+	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $< -lpthread -lrpi_cxx
+
+$(OBJ)/l3_pbuzzer.o: $(EXAMPLES)/l3_pbuzzer.cpp
+	$(COMPILER) $(C_OPT) -I./ -MF$(@:.o=.d) -MT$(@:.o=.d) -o $@ $<
+
+$(BIN)/l3_pbuzzer: $(OBJ)/l3_pbuzzer.o $(LIB)/librpi_cxx.a
 	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $< -lpthread -lrpi_cxx
 
 include $(wildcard $(OBJ)/*.d)	

@@ -1,5 +1,13 @@
 #include "pin.h"
 #include <cassert>
+#include<chrono>
+#include<thread>
+#include<atomic>
+#include<algorithm>
+#include <iostream>
+
+using namespace std::this_thread;
+using namespace std::chrono;
 
 namespace rpi_cxx {
 
@@ -68,6 +76,29 @@ DEF53(PIN_SET_ALL)
 
 #define __ALL_5__
 
+template<pinN n>
+void gpio_p<n>::gentone(float gz)
+{
+	static std::atomic<unsigned> period;
+	const static float max_gz=float(1000000);
+	if(!period.exchange((unsigned)(gz?(max_gz/std::min(gz, max_gz)):0)))
+	{
+		std::thread t([this]()mutable
+		{
+			setmode(out);
+			auto l=read();
+			while(period.load())
+			{
+				write(l=(l==hight?low:hight));
+				sleep_for(microseconds(period));
+			}
+			write(low);
+		});
+		t.detach();
+	}
+	if(!period.load())sleep_for(duration_values<microseconds>::zero());
+}
+
 gpio_pin::gpio_pin(pinN p) :pn_(p)
 {
 
@@ -106,5 +137,16 @@ level gpio_pin::read()const
 	assert(0);
 	return level::low;
 }
+
+void gpio_pin::gentone(float gz)
+{
+	switch(pn_)
+	{
+#define CASE_GENTONE(n) case pinN::p##n : {static gpio_p<pinN::p##n> p##n; p##n.gentone(gz); return;}
+	DEF53(CASE_GENTONE)
+	};
+	assert(0);
+}
+
 
 }

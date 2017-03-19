@@ -108,6 +108,7 @@ public:
 	gpio_regs<p>&	regs() { return _regs; }
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
 	level			read()const { return _regs.getLEV(); }
+	void			gentone(float freq);
 private:
 	gpio_regs<p> &_regs;
 };
@@ -132,6 +133,7 @@ public:
 	void			setmode(mode);
 	void			write(level s);
 	level			read()const;
+	void			gentone(float freq);
 private:
 	const pinN	pn_;
 };
