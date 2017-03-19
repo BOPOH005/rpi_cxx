@@ -35,28 +35,29 @@ void leg_pin(pinN n)
 void leg_bcm()
 {
     auto &gpio=bcm2835::instance().registers();
-    gpio.GPFSEL.fld.p18=mode::out;
+    gpio.GPFSEL.fld.p17=mode::out;
 
     for(int i=5; i>0; --i)
     {
-        gpio.GPSET.fld.p18=true;
+        gpio.GPSET.fld.p17=true;
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        gpio.GPCLR.fld.p18=true;
+        gpio.GPCLR.fld.p17=true;
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
 
 int main (void)
 {
-    std::cout << "Урок №1 Мигающий диод" << std::endl;
+    std::cout   << "Урок №1 Мигающий диод" << std::endl
+                << "GPIO 17 -Out->" << std::endl;
 
 	try
 	{
         std::cout << "Управление на основе шаблонов" << std::endl;
-        leg_pin<pinN::p18>();
+        leg_pin<pinN::p17>();
         std::cout << "Управление на основе параметра" << std::endl;
-        leg_pin(pinN::p18);
+        leg_pin(pinN::p17);
         std::cout << "Управление регистрами" << std::endl;
         leg_bcm();    
 	}
