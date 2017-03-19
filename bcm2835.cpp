@@ -28,8 +28,6 @@ bcm2835::bcm2835()
 		std::cerr << err << std::endl;
 		throw std::runtime_error(err);
 	}
-	
-	std::cout << "open(/dev/mem)=" << file << std::endl;
 	auto map=mmap(
 				nullptr,
 				BLOCK_SIZE,
@@ -43,7 +41,6 @@ bcm2835::bcm2835()
 		std::cerr << err << std::endl;
 		throw std::runtime_error(err);
 	}
-	std::cout << "mmap(/dev/mem)=" << map << std::endl;
 }
 
 void fcloser::operator()(int p)
