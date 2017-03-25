@@ -41,7 +41,8 @@ gpio_regs<p> &gpio_regs<p>::instance()
 						{return regs_.GPPUDCLK.fld.p##n;}
 
 #define PIN_GET_ALL(n) PIN_GET_FSEL(n) PIN_GET_LEV(n) PIN_GET_EDS(n) PIN_GET_REN(n) \
-		PIN_GET_FEN(n) PIN_GET_HEN(n) PIN_GET_LEN(n) PIN_GET_AREN(n) PIN_GET_AFEN(n) PIN_GET_PUDCLK(n)
+		PIN_GET_FEN(n) PIN_GET_HEN(n) PIN_GET_LEN(n) PIN_GET_AREN(n) PIN_GET_AFEN(n) \
+		PIN_GET_PUDCLK(n)
 
 #define PIN_SET_FSEL(n) template<> void gpio_regs<pinN::p##n>::setFSEL(mode p) \
 						{regs_.GPFSEL.fld.p##n=p;}
@@ -70,9 +71,11 @@ gpio_regs<p> &gpio_regs<p>::instance()
 #define PIN_SET_ALL(n) PIN_SET_FSEL(n) PIN_SET_SET(n) PIN_SET_CLR(n) PIN_SET_EDS(n) PIN_SET_REN(n) \
 		PIN_SET_FEN(n) PIN_SET_HEN(n) PIN_SET_LEN(n) PIN_SET_AREN(n) PIN_SET_AFEN(n) PIN_SET_PUDCLK(n)
 
+#define ADD_2_GPPUDCLK(n) template<> GPIO::gppudclk& gpio_p<pinN::p##n>::add2reg(GPIO::gppudclk& r){r.fld.p##1=assert; return r;}
 
 DEF53(PIN_GET_ALL)
 DEF53(PIN_SET_ALL)
+DEF53(ADD_2_GPPUDCLK)
 
 #define __ALL_5__
 
@@ -80,7 +83,7 @@ template<pinN n>
 void gpio_p<n>::gentone(float gz)
 {
 	static std::atomic<unsigned> period;
-	const static float max_gz=float(1000000);
+	const static float max_gz=float(std::micro::den/2);
 	if(!period.exchange((unsigned)(gz?(max_gz/std::min(gz, max_gz)):0)))
 	{
 		std::thread t([this]()mutable
@@ -97,6 +100,17 @@ void gpio_p<n>::gentone(float gz)
 		t.detach();
 	}
 	if(!period.load())sleep_for(duration_values<microseconds>::zero());
+}
+
+void pullupdown(pull f, const GPIO::gppudclk& reg)
+{
+	auto& gpio=bcm2835::instance().registers();
+	gpio.GPPUD.fld.f=f;
+	sleep_for(microseconds(5));
+	gpio.GPPUDCLK.reg=reg.reg;
+	sleep_for(microseconds(5));
+	gpio.GPPUD.fld.f=off;
+	gpio.GPPUDCLK.reg=0;
 }
 
 gpio_pin::gpio_pin(pinN p) :pn_(p)
@@ -147,6 +161,5 @@ void gpio_pin::gentone(float gz)
 	};
 	assert(0);
 }
-
 
 }

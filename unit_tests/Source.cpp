@@ -69,15 +69,15 @@ TEST(GPIO,TestGPPUDCLK)
 	ASSERT_EQ(offsetof(GPIO,GPPUDCLK),0x7E200098-0x7E200000);
 }
 
-TEST(PIN,InitPIN)
-{
-	ASSERT_THROW(gpio_regs<pinN::p0>::instance(), std::runtime_error);
-}
+// TEST(PIN,InitPIN)
+// {
+// 	ASSERT_THROW(gpio_regs<pinN::p0>::instance(), std::runtime_error);
+// }
 
-TEST(PIN, DynamicPIN)
-{
-	ASSERT_THROW(gpio_pin p(pinN::p0), std::runtime_error);
-}
+// TEST(PIN, DynamicPIN)
+// {
+// 	ASSERT_THROW(gpio_pin p(pinN::p0), std::runtime_error);
+// }
 
 TEST(PIN, TestSpeed)
 {

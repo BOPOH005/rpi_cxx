@@ -1,5 +1,7 @@
 #pragma once
 #include "bcm2835.h"
+#include<chrono>
+#include<thread>
 
 namespace rpi_cxx
 {
@@ -91,14 +93,15 @@ public:
 	void setAREN(status);
 	void setAFEN(status);
 	void setPUDCLK(clock);
-private:
-	//bcm2835&		bcm;
+
 	volatile GPIO	&regs_;
 
 	gpio_regs():regs_(bcm2835::instance().registers()) {};
-};
+};   
 
-template<pinN p>
+void		pullupdown(pull f, const GPIO::gppudclk& reg);
+
+template<pinN p>  
 class gpio_p
 {
 public:
@@ -107,8 +110,17 @@ public:
 	void			setmode(mode f){_regs.setFSEL(f);}
 	gpio_regs<p>&	regs() { return _regs; }
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
+	template<class _P=std::chrono::milliseconds>
+	gpio_p<p>& 		operator<<(std::pair<level, _P> s)
+					{
+						write(s.first);
+						std::this_thread::sleep_for(s.second);
+						return *this;
+					} 		
 	level			read()const { return _regs.getLEV(); }
 	void			gentone(float freq);
+	
+	GPIO::gppudclk& add2reg(GPIO::gppudclk& r);
 private:
 	gpio_regs<p> &_regs;
 };

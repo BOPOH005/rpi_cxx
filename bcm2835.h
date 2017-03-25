@@ -531,6 +531,9 @@ struct   GPIO
 			clock p53 : 1;
 			unsigned : 10;
 		} fld;
+
+		template<class _T>
+		gppudclk& operator<<(_T pin){ pin.add2reg(*this); return *this;}
 	} GPPUDCLK;
 	unsigned			: 32;
 	unsigned			: 32;

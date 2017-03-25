@@ -12,12 +12,12 @@ C_INC=-I$(C_LIB_PATH)/include
 
 GOOGLE_PATH=../../googletest/googletest
 GOOGLE_INC=-I$(GOOGLE_PATH)/include
-GOOGLE_LIB=-L$(GOOGLE_PATH)/src/Default
+#GOOGLE_LIB=-L$(GOOGLE_PATH)/src/Default
 
-COMPILER=$(C_PATH)/arm-linux-gnueabihf-g++
+COMPILER=arm-linux-gnueabihf-g++
 C_OPT=-std=c++1y -pthread $(C_INC) -O2 -g3 -Wall -c -fmessage-length=100 -MMD -MP 
 
-LINKER=$(C_PATH)/arm-linux-gnueabihf-ar
+LINKER=arm-linux-gnueabihf-ar
 
 all: work_dirs $(BIN)/unit_tests 
 
@@ -27,14 +27,16 @@ work_dirs:
 	@if [ ! -d $(LIB) ] ; then mkdir -p $(LIB); fi 
 
 clean:
-	rm -rf $(OBJ) $(OBJ) $(LIB)
+	rm -rf $(OBJ) $(OBJ) $(LIB) $(BIN)
 
 install:
 #scp $(BIN)/unit_tests $(BIN)/l1_leg  pi@46.138.165.255:~/projects
 	scp $(wildcard $(BIN)/*)  pi@46.138.165.255:~/projects
 
-$(OBJ)/pin.o: pin.cpp		
-	$(COMPILER) $(C_OPT) -MF$(OBJ)/pin.d -MT$(OBJ)/pin.d -o $@ $<
+include $(wildcard $(OBJ)/*.d)
+
+$(OBJ)/pin.o: pin.cpp 
+	$(COMPILER) $(C_OPT) -MF$(OBJ)/pin.d -MP -o $@ $<
 
 $(OBJ)/bcm2835.o: bcm2835.cpp		
 	$(COMPILER) $(C_OPT) -MF$(OBJ)/bcm2835.d -MT$(OBJ)/bcm2835.d -o $@ $<
@@ -42,30 +44,25 @@ $(OBJ)/bcm2835.o: bcm2835.cpp
 $(LIB)/librpi_cxx.a: $(OBJ)/pin.o $(OBJ)/bcm2835.o
 	$(LINKER) -r $@ $^
 
+$(GOOGLE_PATH)/make/gtest.a:
+	make -C $(GOOGLE_PATH)/make gtest.a CXX=$(COMPILER) AR=$(LINKER)
+
+$(LIB)/libgtest.a: $(GOOGLE_PATH)/make/gtest.a
+	cp $(GOOGLE_PATH)/make/gtest.a $@
+	
 $(OBJ)/Sources.o: ./unit_tests/Source.cpp
-	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MF$(OBJ)/Sources.d -MT$(OBJ)/Sources.d -o $@ $<
+	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MF$(OBJ)/Sources.d -MP -o $@ $<
 
-$(BIN)/unit_tests: $(LIB)/librpi_cxx.a $(OBJ)/Sources.o
-	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $(OBJ)/Sources.o -lpthread -lgoogletest -lrpi_cxx
+$(BIN)/unit_tests: $(LIB)/libgtest.a $(LIB)/librpi_cxx.a $(OBJ)/Sources.o
+	$(COMPILER) -L$(LIB) $(C_LIB) -o $@ $(OBJ)/Sources.o -lpthread -lgtest -lrpi_cxx
 
-examples: $(BIN)/l1_leg $(BIN)/l2_abuzzer $(BIN)/l3_pbuzzer
+EXAMPLES_OBJ=l1_leg l2_abuzzer l3_pbuzzer l4_tiltswitch l5_button
 
-$(OBJ)/l1_leg.o: $(EXAMPLES)/l1_leg.cpp
-	$(COMPILER) $(C_OPT) -I./ -MF$(OBJ)/l1_leg.d -MT$(OBJ)/l1_leg.d -o $@ $<
+examples: work_dirs $(addprefix $(BIN)/, $(EXAMPLES_OBJ))
 
-$(BIN)/l1_leg: $(OBJ)/l1_leg.o $(LIB)/librpi_cxx.a
-	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $< -lpthread -lrpi_cxx
+$(OBJ)/%.o: $(EXAMPLES)/%.cpp
+	$(COMPILER) $(C_OPT) -I./ -MF$(@:.o=.d) -MP -o $@ $<
 
-$(OBJ)/l2_abuzzer.o: $(EXAMPLES)/l2_abuzzer.cpp
-	$(COMPILER) $(C_OPT) -I./ -MF$(OBJ)/l2_abuzzer.d -MT$(OBJ)/l2_abuzzer.d -o $@ $<
-
-$(BIN)/l2_abuzzer: $(OBJ)/l2_abuzzer.o $(LIB)/librpi_cxx.a
-	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $< -lpthread -lrpi_cxx
-
-$(OBJ)/l3_pbuzzer.o: $(EXAMPLES)/l3_pbuzzer.cpp
-	$(COMPILER) $(C_OPT) -I./ -MF$(@:.o=.d) -MT$(@:.o=.d) -o $@ $<
-
-$(BIN)/l3_pbuzzer: $(OBJ)/l3_pbuzzer.o $(LIB)/librpi_cxx.a
-	$(COMPILER) -L$(LIB) $(C_LIB) $(GOOGLE_LIB) -o $@ $< -lpthread -lrpi_cxx
-
-include $(wildcard $(OBJ)/*.d)	
+$(BIN)/%: $(OBJ)/%.o $(LIB)/librpi_cxx.a
+	$(COMPILER) -L$(LIB) $(C_LIB) -o $@ $< -lpthread -lrpi_cxx
+	

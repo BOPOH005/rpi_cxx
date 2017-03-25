@@ -1,6 +1,7 @@
 #include<iostream>
 #include<chrono>
 #include<thread>
+#include<utility>
 #include<rpi_cxx.h>
 
 using namespace rpi_cxx;
@@ -12,10 +13,8 @@ void leg_pin()
 
     for(int i=5; i>0; --i)
     {
-        p.write(hight);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        p.write(low);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        p   << std::make_pair(hight,std::chrono::milliseconds(100))
+            << std::make_pair(low,std::chrono::milliseconds(100));
     }
 }
 
