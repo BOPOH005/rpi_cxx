@@ -86,42 +86,6 @@ enum clock
 //#pragma pack(push,4)
 struct   GPIO
 {
-	// typedef struct  
-	// {
-	// 	u_int64_t GPp1;
-	// 	u_int64_t GPp2;
-	// 	u_int64_t GPp3;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPf;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPCLR;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPLEV;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPEDS;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPREN;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPFEN;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPHEN;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPLEN;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPAREN;
-	// 	u_int32_t :32;
-	// 	u_int64_t GPAFEN;
-	// 	u_int32_t :32;
-	// 	u_int32_t GPPUD;
-	// 	u_int64_t GPPUDCLK;
-	// 	u_int32_t :32;
-	// 	u_int32_t :32;
-	// 	u_int32_t :32;
-	// 	u_int32_t :32;
-	// } __attribute__((packed, aligned(4))) regs; 
-	// regs REGS;
-	// typedef struct 
-	// { 
 	union __attribute__((packed, aligned(4))) gpfsel
 	{
 		struct 
@@ -265,7 +229,6 @@ struct   GPIO
 		u_int64_t reg;
 		struct levels
 		{
-//#define level unsigned
 			level p0       : 1;
 			level p1       : 1;
 			level p2       : 1;
@@ -321,7 +284,6 @@ struct   GPIO
 			level p52       : 1;
 			level p53       : 1;
 			unsigned	          : 10;
-//#undef level 
 		} fld;
 	} /*const*/ GPLEV;
 	unsigned			:32;
@@ -532,6 +494,9 @@ struct   GPIO
 			unsigned : 10;
 		} fld;
 
+		gppudclk(){reg=0;}
+		gppudclk(const gppudclk&r){reg=r.reg;}
+		
 		template<class _T>
 		gppudclk& operator<<(_T pin){ pin.add2reg(*this); return *this;}
 	} GPPUDCLK;

@@ -6,7 +6,7 @@
 namespace rpi_cxx
 {
 
-enum class pinN
+enum /*class*/ pinN
 {
 	p0,
 	p1,

@@ -43,24 +43,30 @@ $(OBJ)/bcm2835.o: bcm2835.cpp
 $(LIB)/librpi_cxx.a: $(OBJ)/pin.o $(OBJ)/bcm2835.o
 	$(LINKER) -r $@ $^
 
-$(GOOGLE_PATH)/make/gtest.a:
-	make -C $(GOOGLE_PATH)/make gtest.a CXX=$(COMPILER) AR=$(LINKER)
-
 $(LIB)/libgtest.a: $(GOOGLE_PATH)/make/gtest.a
 	cp $(GOOGLE_PATH)/make/gtest.a $@
+
+$(GOOGLE_PATH)/make/gtest.a:
+	make -C $(GOOGLE_PATH)/make gtest.a CXX=$(COMPILER) AR=$(LINKER)
 	
-$(OBJ)/Sources.o: ./unit_tests/Source.cpp
-	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MF$(OBJ)/Sources.d -MP -o $@ $<
+$(OBJ)/%.o: ./unit_tests/%.cpp
+	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MF$(@:.o=.d) -MP -o $@ ./$<
 
-$(BIN)/unit_tests: $(LIB)/libgtest.a $(LIB)/librpi_cxx.a $(OBJ)/Sources.o
-	$(COMPILER) -L$(LIB) $(C_LIB) -o $@ $(OBJ)/Sources.o -lpthread -lgtest -lrpi_cxx
+# $(OBJ)/Sources.o: ./unit_tests/Source.cpp
+# 	$(COMPILER) $(C_OPT) $(GOOGLE_INC) -MF$(OBJ)/Sources.d -MP -o $@ $<
 
-EXAMPLES_OBJ=l1_leg l2_abuzzer l3_pbuzzer l4_tiltswitch l5_button
+TEST_CPP = $(notdir $(wildcard ./unit_tests/*.cpp))
+TEST_OBJ = $(addprefix $(OBJ)/, $(TEST_CPP:.cpp=.o))
+
+$(BIN)/unit_tests: $(LIB)/libgtest.a $(LIB)/librpi_cxx.a $(TEST_OBJ)
+	$(COMPILER) -L$(LIB) $(C_LIB) -o $@ $(TEST_OBJ) -lpthread -lgtest -lrpi_cxx
+
+EXAMPLES_OBJ= l1_leg l2_abuzzer l3_pbuzzer l4_tiltswitch l5_button
 
 examples: work_dirs $(addprefix $(BIN)/, $(EXAMPLES_OBJ))
 
 $(OBJ)/%.o: $(EXAMPLES)/%.cpp
-	$(COMPILER) $(C_OPT) -I./ -MF$(@:.o=.d) -MP -o $@ $<
+	$(COMPILER) $(C_OPT) -I./ -MF$(@:.o=.d) -MP -o $@ ./$<
 
 $(BIN)/%: $(OBJ)/%.o $(LIB)/librpi_cxx.a
 	$(COMPILER) -L$(LIB) $(C_LIB) -o $@ $< -lpthread -lrpi_cxx
