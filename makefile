@@ -30,8 +30,7 @@ clean:
 	rm -rf $(OBJ) $(OBJ) $(LIB) $(BIN)
 
 install:
-#scp $(BIN)/unit_tests $(BIN)/l1_leg  pi@46.138.165.255:~/projects
-	scp $(wildcard $(BIN)/*)  pi@46.138.165.255:~/projects
+	scp -Cp $(wildcard $(BIN)/*)  pi@bopoh.ddns.net:~/projects
 
 include $(wildcard $(OBJ)/*.d)
 

@@ -12,15 +12,15 @@ void tiltswitch()
 {
     gpio_p<tilt> p_t(in);
     gpio_p<leg> p_l(out);
-    p_l.write(low);
-
     level status=low;
+    p_l=status;
+
     while(1)
     {
-        const level l=p_t.read();
+        const level l=p_t;
         if(l!=status)
         {
-            p_l.write(status=l);
+            p_l=status=l;
             std::cout << (l==hight?"on":"off") << std::endl;
         }
     }

@@ -110,6 +110,9 @@ public:
 	void			setmode(mode f){_regs.setFSEL(f);}
 	gpio_regs<p>&	regs() { return _regs; }
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
+	gpio_p<p>& 		operator=(level s){write(s);return *this;}
+					operator level() const { return read(); }
+	
 	template<class _P=std::chrono::milliseconds>
 	gpio_p<p>& 		operator<<(std::pair<level, _P> s)
 					{

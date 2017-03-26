@@ -11,20 +11,19 @@ template<pinN b, pinN l>
 void button()
 {
     gpio_p<b> p_b(in);
-    p_b.write(low);
     GPIO::gppudclk reg;
     pullupdown(up, reg << p_b);
     
     gpio_p<l> p_l(out);
-    level status=p_b.read();
-    p_l.write(status);
+    level status=p_b;
+    p_l=status;
     std::cout << std::unitbuf;
     for(unsigned i=0; 1; ) 
     { 
-        const level lt=p_b.read();
+        const level lt=p_b;
         if(lt!=status)
         {
-            p_l.write(status=lt);
+            p_l=status=lt;
             std::cout << i++ << (lt==hight?" on":" off") << std::endl;
         }
     }

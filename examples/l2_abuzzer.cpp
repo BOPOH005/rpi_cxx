@@ -12,9 +12,9 @@ void abuzzer_pin()
 
     for(int i=3; i>0; --i)
     {
-        p.write(hight);
+        p=hight;
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        p.write(low);
+        p=low;
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
 }
