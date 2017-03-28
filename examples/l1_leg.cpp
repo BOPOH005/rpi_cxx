@@ -2,7 +2,7 @@
 #include<chrono>
 #include<thread>
 #include<utility>
-#include<rpi_cxx.h>
+#include"../rpi_cxx.h"
 
 using namespace rpi_cxx;
 

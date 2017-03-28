@@ -2,8 +2,7 @@
 #include<chrono>
 #include<thread>
 #include<atomic>
-#include<rpi_cxx.h>
-
+#include"../rpi_cxx.h"
 
 using namespace rpi_cxx;
 using namespace std::this_thread;

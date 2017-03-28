@@ -1,7 +1,7 @@
 #include<iostream>
 #include<chrono>
 #include<thread>
-#include<rpi_cxx.h>
+#include"../rpi_cxx.h"
 
 using namespace rpi_cxx;
 
