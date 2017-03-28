@@ -20,10 +20,10 @@ $(LIB)/libgtest.a: $(GOOGLE_PATH)/make/gtest.a
 	copy  $(subst /,\,$<) $(subst /,\,$@)
 
 else
-	C_PATH=../tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
-	C_LIB_PATH=$(C_PATH)/lib/gcc/arm-linux-gnueabihf/4.8.3
+	C_PATH=~/Projects/raspberry/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf
+	C_LIB_PATH=$(C_PATH)/arm-linux-gnueabihf/sysroot/usr/lib
 	C_LIB=-L$(C_LIB_PATH)
-	C_INC=-I$(C_LIB_PATH)/include
+	C_INC=-I$(C_PATH)/arm-linux-gnueabihf/include/c++/4.9.3
 	GOOGLE_PATH=../../googletest/googletest
 
 $(LIB)/libgtest.a: $(GOOGLE_PATH)/make/gtest.a
