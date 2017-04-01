@@ -72,10 +72,12 @@ gpio_regs<p> &gpio_regs<p>::instance()
 		PIN_SET_FEN(n) PIN_SET_HEN(n) PIN_SET_LEN(n) PIN_SET_AREN(n) PIN_SET_AFEN(n) PIN_SET_PUDCLK(n)
 
 #define ADD_2_GPPUDCLK(n) template<> GPIO::gppudclk& gpio_p<pinN::p##n>::add2reg(GPIO::gppudclk& r){r.fld.p##n=assert; return r;}
+#define ADD_2_GPSETCLR(n) template<> GPIO::gpsetclr& gpio_p<pinN::p##n>::add2reg(GPIO::gpsetclr& r){r.fld.p##n=true; return r;}
 
 DEF53(PIN_GET_ALL)
 DEF53(PIN_SET_ALL)
 DEF53(ADD_2_GPPUDCLK)
+DEF53(ADD_2_GPSETCLR)
 
 #define __ALL_5__
 
@@ -102,16 +104,7 @@ void gpio_p<n>::gentone(float gz)
 	if(!period.load())sleep_for(duration_values<microseconds>::zero());
 }
 
-void pullupdown(pull f, const GPIO::gppudclk& reg)
-{
-	auto& gpio=bcm2835::instance().registers();
-	gpio.GPPUD.fld.f=f;
-	sleep_for(microseconds(10));
-	gpio.GPPUDCLK.reg=reg.reg;
-	sleep_for(microseconds(10));
-	gpio.GPPUD.fld.f=off;
-	gpio.GPPUDCLK.reg=0;
-}
+
 
 gpio_pin::gpio_pin(pinN p) :pn_(p)
 {

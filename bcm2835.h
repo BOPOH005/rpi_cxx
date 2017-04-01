@@ -222,6 +222,8 @@ struct   GPIO
 		}fld;
 		gpsetclr(){reg=0;}
 		gpsetclr(const gpsetclr& r){reg=r.reg;}
+		template<class _T>
+		gpsetclr& operator<<(_T pin){ pin.add2reg(*this); return *this;}
 	} GPSET;
 	unsigned			:32;
 	gpsetclr	GPCLR;
@@ -514,6 +516,11 @@ class bcm2835 {
 public:
 	static bcm2835& instance();
 	volatile GPIO& registers();
+
+	// void	setmode(mode m, const GPIO::gpfsel& reg);
+	void	pullupdown(pull f, const GPIO::gppudclk& reg);
+	void	setlevel(level l, const GPIO::gpsetclr& reg);
+
 private:
 	std::unique_ptr<int, 	fcloser>  	mem_fd_;
 	std::unique_ptr<void, 	mcloser> 	p_map_;

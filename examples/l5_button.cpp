@@ -16,7 +16,8 @@ void button()
     gpio_p<b> p_b(in);
     //p_b=hight;
     GPIO::gppudclk reg;
-    pullupdown(down, reg << p_b);
+    auto& bcm=bcm2835::instance();
+    bcm.pullupdown(down, reg << p_b);
     
     std::cout << std::hex << reg.reg << std::endl;
 
@@ -32,7 +33,7 @@ void button()
             std::cout << i++ << (lt==hight?" on":" off") << std::endl;
         }
     }
-    pullupdown(off, reg);    
+    bcm.pullupdown(off, reg);    
 }
 
 int main (void)

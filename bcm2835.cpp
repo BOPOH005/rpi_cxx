@@ -13,6 +13,11 @@
 #include <unistd.h>
 #include <cerrno>
 #include <cstring>
+#include <chrono>
+#include <thread>
+
+using namespace std::this_thread;
+using namespace std::chrono;
 
 namespace rpi_cxx {
 static const size_t RASPBERRY_PI_PERI_BASE(0x3F000000);
@@ -63,5 +68,30 @@ volatile GPIO& bcm2835::registers()
 {
 	return *static_cast<volatile GPIO*>(p_map_.get());
 }
+
+void bcm2835::pullupdown(pull f, const GPIO::gppudclk& reg)
+{
+	auto& gpio=registers();
+	gpio.GPPUD.fld.f=f;
+	sleep_for(microseconds(10));
+	gpio.GPPUDCLK.reg=reg.reg;
+	sleep_for(microseconds(10));
+	gpio.GPPUD.fld.f=off;
+	gpio.GPPUDCLK.reg=0;
+}
+
+void bcm2835::setlevel(level l, const GPIO::gpsetclr& reg)
+{
+	auto& gpio=registers();
+	if(l==hight)
+		gpio.GPSET.reg=reg.reg;
+	else	
+		gpio.GPCLR.reg=reg.reg;
+}
+
+// void bcm2835::setmode(mode m, const GPIO::gpfsel& reg)
+// {
+	
+// }
 
 } /* namespace rpi_cxx */

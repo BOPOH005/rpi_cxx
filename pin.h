@@ -99,7 +99,6 @@ public:
 	gpio_regs():regs_(bcm2835::instance().registers()) {};
 };   
 
-void		pullupdown(pull f, const GPIO::gppudclk& reg);
 
 template<pinN p>  
 class gpio_p
@@ -124,6 +123,7 @@ public:
 	void			gentone(float freq);
 	
 	GPIO::gppudclk& add2reg(GPIO::gppudclk& r);
+	GPIO::gpsetclr& add2reg(GPIO::gpsetclr& r);
 private:
 	gpio_regs<p> &_regs;
 };
