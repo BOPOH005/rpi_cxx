@@ -10,17 +10,19 @@ using namespace rpi_cxx;
 
 TEST(PIN, TestSpeed)
 {
-#define DEF23(macro) macro(0) macro(1) macro(2) macro(3) macro(4) macro(5) macro(6) macro(7) \
+#define DEF31(macro) macro(0) macro(1) macro(2) macro(3) macro(4) macro(5) macro(6) macro(7) \
     macro(8) macro(9) macro(10) macro(11) macro(12) macro(13) macro(14) macro(15)            \
-	macro(16) macro(17) macro(18) macro(19) macro(20) macro(21) macro(22) macro(23)
+	macro(16) macro(17) macro(18) macro(19) macro(20) macro(21) macro(22) macro(23)\
+	macro(24) macro(25) macro(26) macro(27) macro(28) macro(29) macro(30) macro(31)
+
 
     gpio_pin p[] = {
 #define DEF_PIN_N(n) pinN::p##n,
-	DEF23(DEF_PIN_N)
+	DEF31(DEF_PIN_N)
 	    pinN::p0};
 
-    // #define DEF_PINREGS(n) auto sp##n=gpio_regs<pinN::p##n>::instance();
-    // 	DEF53(DEF_PINREGS)
+#define DEF_PINREGS(n) auto sp##n=gpio_regs<pinN::p##n>::instance();
+    DEF31(DEF_PINREGS)
 
     const size_t count = 100000;
 
@@ -28,7 +30,7 @@ TEST(PIN, TestSpeed)
     for (size_t i = 0; i < count; ++i)
     {
 #define SET_FSEL_1(n) p[n].setmode(mode::out);
-	DEF23(SET_FSEL_1)
+	DEF31(SET_FSEL_1)
     }
     auto &regs = bcm2835::instance().registers();
     volatile unsigned *GPFSEL = reinterpret_cast<volatile unsigned *>(&regs.GPFSEL);
@@ -43,15 +45,16 @@ TEST(PIN, TestSpeed)
 	GPFSEL[reg] &= ~((0b111 & ~0b001) << offset); \
 	GPFSEL[reg] |= ((0b111 & 0b000) << offset);   \
     }
-	DEF23(SET_FSEL_3)
+	DEF31(SET_FSEL_3)
     }
     auto t4 = std::chrono::high_resolution_clock::now();
 
     for (size_t i = 0; i < count; ++i)
     {
-#define SET_FSEL_4(n) regs.GPFSEL.fld.p##n = mode::out;
-	//sp##n.setFSEL(mode::out);
-	DEF23(SET_FSEL_4)
+#define SET_FSEL_4(n) sp##n.setFSEL(mode::out);
+//regs.GPFSEL.fld.p##n = mode::out; 
+	
+	DEF31(SET_FSEL_4)
     }
     auto t5 = std::chrono::high_resolution_clock::now();
 
@@ -134,21 +137,61 @@ std::ostream &operator<<(std::ostream &os, const volatile GPIO::gplev &s)
 	      << "5	|" << s.fld.p50 << "	|" << s.fld.p51 << "	|" << s.fld.p52 << "	|" << s.fld.p53 << "	|" << std::endl;
 }
 
+TEST(PIN, bitBlink)
+{
+    try
+    {
+	bcm2835 &bcm = bcm2835::instance();
+	volatile GPIO &gpio = bcm.registers();
+	volatile u_int32_t *GPFSEL = reinterpret_cast<volatile u_int32_t *>(&gpio.GPFSEL.fld);
+	volatile u_int32_t *GPSET = reinterpret_cast<volatile u_int32_t *>(&gpio.GPSET.fld);
+	volatile u_int32_t *GPCLR = reinterpret_cast<volatile u_int32_t *>(&gpio.GPCLR.fld);
+	volatile const u_int32_t *GPLEV = reinterpret_cast<volatile const u_int32_t *>(&gpio.GPLEV);
+	const int pin = 18;
+	const int reg3 = pin / 10;
+	const int offset3 = (pin % 10) * 3;
+	const int reg = pin / 31;
+	const int offset = (pin % 31);
+	GPFSEL[reg3] &= ~(0b111 << offset3);
+	GPFSEL[reg3] |= (0b001 << offset3);
+
+	for (size_t i = 0; i < 3; ++i)
+	{
+	    GPSET[reg] = (1 << offset);
+	    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	    EXPECT_TRUE(GPLEV[reg] & (1 << offset));
+	    GPCLR[reg] = (1 << offset);
+	    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	    EXPECT_FALSE(GPLEV[reg] & (1 << offset));
+	}
+    }
+    catch (std::runtime_error err)
+    {
+	FAIL() << "Ошибка! Проверте запуск с sudo";
+    }
+    catch (...)
+    {
+	FAIL() << "Нeизвестное исключение";
+    }
+}
+
 TEST(PIN, bcmBlink)
 {
     try
     {
 	bcm2835 &bcm = bcm2835::instance();
 	volatile GPIO &gpio = bcm.registers();
-	gpio.GPFSEL.fld.p18 = mode::out;
 
+	gpio.GPFSEL.fld.p18 = mode::in;
+	gpio.GPFSEL.fld.p18 = mode::out;
 	for (int i = 3; i > 0; --i)
 	{
-	    gpio.GPSET.fld.p18 = true;
+		GPIO::gpsetclr regs;
+		regs.fld.p18=true;
+	    gpio.GPSET.reg=regs.reg;
 	    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	    EXPECT_TRUE(gpio.GPLEV.fld.p18 == level::hight);
-
-	    gpio.GPCLR.fld.p18 = true;
+		gpio.GPCLR.reg=regs.reg;
 	    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	    EXPECT_TRUE(gpio.GPLEV.fld.p18 == level::low);
 	}
@@ -171,12 +214,12 @@ TEST(PIN, Blink)
 
 	for (int i = 3; i > 0; --i)
 	{
-	    p.write(level::hight);
+	    p = level::hight;
 	    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	    EXPECT_TRUE(p.read() == level::hight);
-	    p.write(level::low);
+	    EXPECT_TRUE(p == level::hight);
+	    p = level::low;
 	    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	    EXPECT_TRUE(p.read() == level::low);
+	    EXPECT_TRUE(p == level::low);
 	}
     }
     catch (std::runtime_error err)

@@ -220,6 +220,8 @@ struct   GPIO
 			bool p53       : 1;
 			unsigned               : 10;
 		}fld;
+		gpsetclr(){reg=0;}
+		gpsetclr(const gpsetclr& r){reg=r.reg;}
 	} GPSET;
 	unsigned			:32;
 	gpsetclr	GPCLR;
@@ -285,7 +287,7 @@ struct   GPIO
 			level p53       : 1;
 			unsigned	          : 10;
 		} fld;
-	} /*const*/ GPLEV;
+	} const GPLEV;
 	unsigned			:32;
 	union __attribute__((packed, aligned(4))) gpeds
 	{
