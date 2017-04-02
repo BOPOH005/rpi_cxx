@@ -38,10 +38,10 @@ void leg_bcm()
 
     for(int i=5; i>0; --i)
     {
-        gpio.GPSET.fld.p17=true;
+        gpio.GPSET.fld.p17=set::on;
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        gpio.GPCLR.fld.p17=true;
+        gpio.GPCLR.fld.p17=set::on;
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
