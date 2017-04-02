@@ -45,6 +45,21 @@ enum  mode
 	fun5=0b010
 };
 
+// Компилятор gcc не корретно обрабатывает конструкции:
+// enum class level: bool в битовом поле
+// при чтении выдает "погоду" в значении hight
+enum level
+{
+	low		=0x0,
+	hight	=0x1
+};
+
+enum set
+{
+	//uncheck	=0x0,
+	on	=0x1
+};
+
 enum pull
 {
 	off 		= 0x0, // disable pull-up/down
@@ -135,60 +150,60 @@ struct   GPIO
 		u_int64_t reg;
 		struct 
 		{
-			bool p0       : 1;
-			bool p1       : 1;
-			bool p2       : 1;
-			bool p3       : 1;
-			bool p4       : 1;
-			bool p5       : 1;
-			bool p6       : 1;
-			bool p7       : 1;
-			bool p8       : 1;
-			bool p9       : 1;
-			bool p10      : 1;
-			bool p11      : 1;
-			bool p12      : 1;
-			bool p13      : 1;
-			bool p14      : 1;
-			bool p15      : 1;
-			bool p16      : 1;
-			bool p17      : 1;
-			bool p18      : 1;
-			bool p19      : 1;
-			bool p20      : 1;
-			bool p21      : 1;
-			bool p22      : 1;
-			bool p23      : 1;
-			bool p24      : 1;
-			bool p25      : 1;
-			bool p26      : 1;
-			bool p27      : 1;
-			bool p28      : 1;
-			bool p29      : 1;
-			bool p30      : 1;
-			bool p31      : 1;
-			bool p32       : 1;
-			bool p33       : 1;
-			bool p34       : 1;
-			bool p35       : 1;
-			bool p36       : 1;
-			bool p37       : 1;
-			bool p38       : 1;
-			bool p39       : 1;
-			bool p40       : 1;
-			bool p41       : 1;
-			bool p42       : 1;
-			bool p43       : 1;
-			bool p44       : 1;
-			bool p45       : 1;
-			bool p46       : 1;
-			bool p47       : 1;
-			bool p48       : 1;
-			bool p49       : 1;
-			bool p50       : 1;
-			bool p51       : 1;
-			bool p52       : 1;
-			bool p53       : 1;
+			set p0       : 1;
+			set p1       : 1;
+			set p2       : 1;
+			set p3       : 1;
+			set p4       : 1;
+			set p5       : 1;
+			set p6       : 1;
+			set p7       : 1;
+			set p8       : 1;
+			set p9       : 1;
+			set p10      : 1;
+			set p11      : 1;
+			set p12      : 1;
+			set p13      : 1;
+			set p14      : 1;
+			set p15      : 1;
+			set p16      : 1;
+			set p17      : 1;
+			set p18      : 1;
+			set p19      : 1;
+			set p20      : 1;
+			set p21      : 1;
+			set p22      : 1;
+			set p23      : 1;
+			set p24      : 1;
+			set p25      : 1;
+			set p26      : 1;
+			set p27      : 1;
+			set p28      : 1;
+			set p29      : 1;
+			set p30      : 1;
+			set p31      : 1;
+			set p32       : 1;
+			set p33       : 1;
+			set p34       : 1;
+			set p35       : 1;
+			set p36       : 1;
+			set p37       : 1;
+			set p38       : 1;
+			set p39       : 1;
+			set p40       : 1;
+			set p41       : 1;
+			set p42       : 1;
+			set p43       : 1;
+			set p44       : 1;
+			set p45       : 1;
+			set p46       : 1;
+			set p47       : 1;
+			set p48       : 1;
+			set p49       : 1;
+			set p50       : 1;
+			set p51       : 1;
+			set p52       : 1;
+			set p53       : 1;
 			unsigned               : 10;
 		}fld;
 		gpset(){reg=0;}
@@ -199,7 +214,69 @@ struct   GPIO
 	unsigned			:32;
 	gpset	GPCLR;
 	unsigned			:32;
-	gpset const GPLEV;
+	union __attribute__((packed, aligned(4))) gplev
+	{
+		u_int64_t reg;
+		struct gplevbits
+		{
+			level p0       : 1;
+			level p1       : 1;
+			level p2       : 1;
+			level p3       : 1;
+			level p4       : 1;
+			level p5       : 1;
+			level p6       : 1;
+			level p7       : 1;
+			level p8       : 1;
+			level p9       : 1;
+			level p10      : 1;
+			level p11      : 1;
+			level p12      : 1;
+			level p13      : 1;
+			level p14      : 1;
+			level p15      : 1;
+			level p16      : 1;
+			level p17      : 1;
+			level p18      : 1;
+			level p19      : 1;
+			level p20      : 1;
+			level p21      : 1;
+			level p22      : 1;
+			level p23      : 1;
+			level p24      : 1;
+			level p25      : 1;
+			level p26      : 1;
+			level p27      : 1;
+			level p28      : 1;
+			level p29      : 1;
+			level p30      : 1;
+			level p31      : 1;
+			level p32       : 1;
+			level p33       : 1;
+			level p34       : 1;
+			level p35       : 1;
+			level p36       : 1;
+			level p37       : 1;
+			level p38       : 1;
+			level p39       : 1;
+			level p40       : 1;
+			level p41       : 1;
+			level p42       : 1;
+			level p43       : 1;
+			level p44       : 1;
+			level p45       : 1;
+			level p46       : 1;
+			level p47       : 1;
+			level p48       : 1;
+			level p49       : 1;
+			level p50       : 1;
+			level p51       : 1;
+			level p52       : 1;
+			level p53       : 1;
+			unsigned               : 10;
+		}fld;
+		gplev(){reg=0;}
+	} const GPLEV;
 	unsigned			:32;
 	gpset	GPEDS;
 	unsigned			:32;
@@ -233,11 +310,6 @@ struct   GPIO
 };
 //#pragma push
 
-enum class level 
-{
-	low		=0x0,
-	hight	=0x1
-};
 
 class bcm2835 {
 public:

@@ -5,84 +5,6 @@
 
 namespace rpi_cxx
 {
-
-// enum /*class*/ pinN
-// {
-// 	p0,
-// 	p1,
-// 	p2,
-// 	p3,
-// 	p4,
-// 	p5,
-// 	p6,
-// 	p7,
-// 	p8,
-// 	p9,
-// 	p10,
-// 	p11,
-// 	p12,
-// 	p13,
-// 	p14,
-// 	p15,
-// 	p16,
-// 	p17,
-// 	p18,
-// 	p19,
-// 	p20,
-// 	p21,
-// 	p22,
-// 	p23,
-// 	p24,
-// 	p25,
-// 	p26,
-// 	p27,
-// 	p28,
-// 	p29,
-// 	p30,
-// 	p31,
-// 	p32,
-// 	p33,
-// 	p34,
-// 	p35,
-// 	p36,
-// 	p37,
-// 	p38,
-// 	p39,
-// 	p40,
-// 	p41,
-// 	p42,
-// 	p43,
-// 	p44,
-// 	p45,
-// 	p46,
-// 	p47,
-// 	p48,
-// 	p49,
-// 	p50,
-// 	p51,
-// 	p52,
-// 	p53
-// };
-
-
-
-// enum class bool 
-// {
-// 	not_detected	=0x0,
-// 	detected		=0x1
-// };
-
-// enum class bool 
-// {
-// 	disable = 0x0,
-// 	on 		= 0x1
-// };
-
-// enum class bool 
-// {
-// 	no_effect	= 0x0,
-// 	assert		= 0x1
-// };
 typedef  uint8_t pinN;
 
 template<pinN p>
@@ -93,26 +15,26 @@ public:
 
 	mode 	getFSEL()const;
 	level	getLEV()const;
-	bool	getEDS()const;
-	bool 	getREN()const;
-	bool 	getFEN()const;
-	bool 	getHEN()const;
-	bool 	getLEN()const;
-	bool 	getAREN()const;
-	bool 	getAFEN()const;
-	bool 	getPUDCLK()const;
+	set		getEDS()const;
+	set 	getREN()const;
+	set 	getFEN()const;
+	set 	getHEN()const;
+	set 	getLEN()const;
+	set 	getAREN()const;
+	set 	getAFEN()const;
+	set 	getPUDCLK()const;
 
 	void setFSEL(mode);
 	void setSET();
 	void setCLR();
-	void setEDS(bool );
-	void setREN(bool );
-	void setFEN(bool );
-	void setHEN(bool );
-	void setLEN(bool );
-	void setAREN(bool );
-	void setAFEN(bool );
-	void setPUDCLK(bool );
+	void setEDS(set );
+	void setREN(set );
+	void setFEN(set );
+	void setHEN(set );
+	void setLEN(set );
+	void setAREN(set );
+	void setAFEN(set );
+	void setPUDCLK(set );
 
 	volatile GPIO	&regs_;
 

@@ -22,22 +22,22 @@ gpio_regs<p> &gpio_regs<p>::instance()
 #define PIN_GET_FSEL(n) template<>mode gpio_regs<n>::getFSEL()const \
 						{return regs_.GPFSEL.fld.p##n;}
 #define PIN_GET_LEV(n) template<>level gpio_regs<n>::getLEV()const\
-						{return (regs_.GPLEV.fld.p##n?level::hight:level::low);}
-#define PIN_GET_EDS(n) template<> bool gpio_regs<n>::getEDS()const\
+						{return regs_.GPLEV.fld.p##n;}
+#define PIN_GET_EDS(n) template<> set gpio_regs<n>::getEDS()const\
 						{return regs_.GPEDS.fld.p##n;}
-#define PIN_GET_REN(n) template<> bool gpio_regs<n>::getREN()const\
+#define PIN_GET_REN(n) template<> set gpio_regs<n>::getREN()const\
 						{return regs_.GPREN.fld.p##n;}
-#define PIN_GET_FEN(n) template<> bool gpio_regs<n>::getFEN()const\
+#define PIN_GET_FEN(n) template<> set gpio_regs<n>::getFEN()const\
 						{return regs_.GPFEN.fld.p##n;}
-#define PIN_GET_HEN(n) template<>bool gpio_regs<n>::getHEN()const\
+#define PIN_GET_HEN(n) template<>set gpio_regs<n>::getHEN()const\
 						{return regs_.GPHEN.fld.p##n;}
-#define PIN_GET_LEN(n) template<>bool gpio_regs<n>::getLEN()const\
+#define PIN_GET_LEN(n) template<>set gpio_regs<n>::getLEN()const\
 						{return regs_.GPLEN.fld.p##n;}
-#define PIN_GET_AREN(n) template<>bool gpio_regs<n>::getAREN()const\
+#define PIN_GET_AREN(n) template<>set gpio_regs<n>::getAREN()const\
 						{return regs_.GPAREN.fld.p##n;}
-#define PIN_GET_AFEN(n) template<>bool gpio_regs<n>::getAFEN()const\
+#define PIN_GET_AFEN(n) template<>set gpio_regs<n>::getAFEN()const\
 						{return regs_.GPAFEN.fld.p##n;}
-#define PIN_GET_PUDCLK(n) template<>bool gpio_regs<n>::getPUDCLK()const\
+#define PIN_GET_PUDCLK(n) template<>set gpio_regs<n>::getPUDCLK()const\
 						{return regs_.GPPUDCLK.fld.p##n;}
 
 #define PIN_GET_ALL(n) PIN_GET_FSEL(n) PIN_GET_LEV(n) PIN_GET_EDS(n) PIN_GET_REN(n) \
@@ -47,31 +47,31 @@ gpio_regs<p> &gpio_regs<p>::instance()
 #define PIN_SET_FSEL(n) template<> void gpio_regs<n>::setFSEL(mode p) \
 						{regs_.GPFSEL.fld.p##n=p;}
 #define PIN_SET_SET(n) template<> void gpio_regs<n>::setSET()\
-						{GPIO::gpset set; set.fld.p##n=true; regs_.GPSET.reg=set.reg;}
+						{GPIO::gpset s; s.fld.p##n=set::on; regs_.GPSET.reg=s.reg;}
 #define PIN_SET_CLR(n) template<> void gpio_regs<n>::setCLR()\
-						{GPIO::gpset clr; clr.fld.p##n=true; regs_.GPCLR.reg=clr.reg;}
-#define PIN_SET_EDS(n) template<> void gpio_regs<n>::setEDS( bool p)\
+						{GPIO::gpset clr; clr.fld.p##n=set::on; regs_.GPCLR.reg=clr.reg;}
+#define PIN_SET_EDS(n) template<> void gpio_regs<n>::setEDS( set p)\
 						{regs_.GPEDS.fld.p##n=p;}
-#define PIN_SET_REN(n) template<> void gpio_regs<n>::setREN( bool p)\
+#define PIN_SET_REN(n) template<> void gpio_regs<n>::setREN( set p)\
 						{regs_.GPREN.fld.p##n=p;}
-#define PIN_SET_FEN(n) template<> void gpio_regs<n>::setFEN( bool p)\
+#define PIN_SET_FEN(n) template<> void gpio_regs<n>::setFEN( set p)\
 						{regs_.GPFEN.fld.p##n=p;}
-#define PIN_SET_HEN(n) template<> void gpio_regs<n>::setHEN( bool p)\
+#define PIN_SET_HEN(n) template<> void gpio_regs<n>::setHEN( set p)\
 						{regs_.GPHEN.fld.p##n=p;}
-#define PIN_SET_LEN(n) template<> void gpio_regs<n>::setLEN( bool p)\
+#define PIN_SET_LEN(n) template<> void gpio_regs<n>::setLEN( set p)\
 						{regs_.GPLEN.fld.p##n=p;}
-#define PIN_SET_AREN(n) template<> void gpio_regs<n>::setAREN( bool p)\
+#define PIN_SET_AREN(n) template<> void gpio_regs<n>::setAREN( set p)\
 						{regs_.GPAREN.fld.p##n=p;}
-#define PIN_SET_AFEN(n) template<> void gpio_regs<n>::setAFEN( bool p)\
+#define PIN_SET_AFEN(n) template<> void gpio_regs<n>::setAFEN( set p)\
 						{regs_.GPAFEN.fld.p##n=p;}
-#define PIN_SET_PUDCLK(n) template<> void gpio_regs<n>::setPUDCLK( bool p)\
+#define PIN_SET_PUDCLK(n) template<> void gpio_regs<n>::setPUDCLK( set p)\
 						{regs_.GPPUDCLK.fld.p##n=p;}
 
 
 #define PIN_SET_ALL(n) PIN_SET_FSEL(n) PIN_SET_SET(n) PIN_SET_CLR(n) PIN_SET_EDS(n) PIN_SET_REN(n) \
 		PIN_SET_FEN(n) PIN_SET_HEN(n) PIN_SET_LEN(n) PIN_SET_AREN(n) PIN_SET_AFEN(n) PIN_SET_PUDCLK(n)
 
-#define ADD_2_gpset(n) template<> GPIO::gpset& gpio<n>::add2reg(GPIO::gpset& r){r.fld.p##n=true; return r;}
+#define ADD_2_gpset(n) template<> GPIO::gpset& gpio<n>::add2reg(GPIO::gpset& r){r.fld.p##n=set::on; return r;}
 
 DEF53(PIN_GET_ALL)
 DEF53(PIN_SET_ALL)
@@ -88,7 +88,7 @@ void gpio<n>::gentone(float gz)
 	{
 		std::thread t([this]()
 		{
-			setmode(out);
+			setmode(mode::out);
 			auto l=read();
 			while(period.load())
 			{
