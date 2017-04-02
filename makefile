@@ -39,7 +39,7 @@ endif
 GOOGLE_INC=-I$(GOOGLE_PATH)/include
 
 COMPILER=arm-linux-gnueabihf-g++
-C_OPT=-std=c++1y -pthread $(C_INC) -O2 -Wall -c -fmessage-length=100 -MMD -MP 
+C_OPT=-std=c++1y -pthread $(C_INC) -O0 -Wall -c -fmessage-length=100 -MMD -MP 
 
 LINKER=arm-linux-gnueabihf-ar
 

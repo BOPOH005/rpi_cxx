@@ -65,50 +65,34 @@ TEST(GPIO, TestGPPUDCLK)
     ASSERT_EQ(offsetof(GPIO, GPPUDCLK), size_t(0x7E200098 - 0x7E200000));
 }
 
-TEST(GPIO__gppudclk, Test_null)
+TEST(GPIO__gpset, Test_null)
 {
-    GPIO::gppudclk reg;
-    ASSERT_TRUE(reg.reg == 0);
-}
-
-TEST(GPIO__gppudclk, Test_add2)
-{
-    GPIO::gppudclk reg;
-    const u_int64_t i = -1;
-
-#define EXPECT_GPPUDCLK(n) EXPECT_TRUE((reg << gpio_p<p##n>()).reg == (i >> (63 - n)));
-
-    DEF53(EXPECT_GPPUDCLK)
-}
-
-TEST(GPIO__gpsetclr, Test_null)
-{
-    GPIO::gpsetclr reg;
+    GPIO::gpset reg;
     ASSERT_TRUE(reg.reg == 0);
 }
 
 
-TEST(GPIO__gpsetclr, Test_add2)
+TEST(GPIO__gpset, Test_add2)
 {
-    GPIO::gpsetclr reg;
+    GPIO::gpset reg;
     const u_int64_t i = -1;
 
-#define EXPECT_GPPUDCLK(n) EXPECT_TRUE((reg << gpio_p<p##n>()).reg == (i >> (63 - n)));
+#define EXPECT_GPPUDCLK(n) EXPECT_TRUE((reg << gpio<n>()).reg == (i >> (63 - n)));
 
     DEF53(EXPECT_GPPUDCLK)
 }
 
-TEST(GPIO__gpsetclr, Test_multiblink)
+TEST(GPIO__gpset, Test_multiblink)
 {
-    gpio_p<p17> p1(out);
-    gpio_p<p18> p2(out);
-    GPIO::gpsetclr reg;
+    gpio<17> p1(mode::out);
+    gpio<18> p2(mode::out);
+    GPIO::gpset reg;
     auto& bcm=bcm2835::instance();
 
-    bcm.setlevel(hight, reg << p1 << p2 );
+    bcm.setlevel(level::hight, reg << p1 << p2 );
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    EXPECT_TRUE(p1==hight && p2==hight);
-    bcm.setlevel(low, reg );    
+    EXPECT_TRUE(p1==level::hight && p2==level::hight);
+    bcm.setlevel(level::low, reg );    
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    EXPECT_TRUE(p1==low && p2==low);
+    EXPECT_TRUE(p1==level::low && p2==level::low);
 }

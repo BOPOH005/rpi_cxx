@@ -19,70 +19,68 @@ gpio_regs<p> &gpio_regs<p>::instance()
 	return r;
 }
 
-#define PIN_GET_FSEL(n) template<>mode gpio_regs<pinN::p##n>::getFSEL()const \
+#define PIN_GET_FSEL(n) template<>mode gpio_regs<n>::getFSEL()const \
 						{return regs_.GPFSEL.fld.p##n;}
-#define PIN_GET_LEV(n) template<>level gpio_regs<pinN::p##n>::getLEV()const\
-						{return regs_.GPLEV.fld.p##n;}
-#define PIN_GET_EDS(n) template<>event gpio_regs<pinN::p##n>::getEDS()const\
+#define PIN_GET_LEV(n) template<>level gpio_regs<n>::getLEV()const\
+						{return (regs_.GPLEV.fld.p##n?level::hight:level::low);}
+#define PIN_GET_EDS(n) template<> bool gpio_regs<n>::getEDS()const\
 						{return regs_.GPEDS.fld.p##n;}
-#define PIN_GET_REN(n) template<>status gpio_regs<pinN::p##n>::getREN()const\
+#define PIN_GET_REN(n) template<> bool gpio_regs<n>::getREN()const\
 						{return regs_.GPREN.fld.p##n;}
-#define PIN_GET_FEN(n) template<>status gpio_regs<pinN::p##n>::getFEN()const\
+#define PIN_GET_FEN(n) template<> bool gpio_regs<n>::getFEN()const\
 						{return regs_.GPFEN.fld.p##n;}
-#define PIN_GET_HEN(n) template<>status gpio_regs<pinN::p##n>::getHEN()const\
+#define PIN_GET_HEN(n) template<>bool gpio_regs<n>::getHEN()const\
 						{return regs_.GPHEN.fld.p##n;}
-#define PIN_GET_LEN(n) template<>status gpio_regs<pinN::p##n>::getLEN()const\
+#define PIN_GET_LEN(n) template<>bool gpio_regs<n>::getLEN()const\
 						{return regs_.GPLEN.fld.p##n;}
-#define PIN_GET_AREN(n) template<>status gpio_regs<pinN::p##n>::getAREN()const\
+#define PIN_GET_AREN(n) template<>bool gpio_regs<n>::getAREN()const\
 						{return regs_.GPAREN.fld.p##n;}
-#define PIN_GET_AFEN(n) template<>status gpio_regs<pinN::p##n>::getAFEN()const\
+#define PIN_GET_AFEN(n) template<>bool gpio_regs<n>::getAFEN()const\
 						{return regs_.GPAFEN.fld.p##n;}
-#define PIN_GET_PUDCLK(n) template<>clock gpio_regs<pinN::p##n>::getPUDCLK()const\
+#define PIN_GET_PUDCLK(n) template<>bool gpio_regs<n>::getPUDCLK()const\
 						{return regs_.GPPUDCLK.fld.p##n;}
 
 #define PIN_GET_ALL(n) PIN_GET_FSEL(n) PIN_GET_LEV(n) PIN_GET_EDS(n) PIN_GET_REN(n) \
 		PIN_GET_FEN(n) PIN_GET_HEN(n) PIN_GET_LEN(n) PIN_GET_AREN(n) PIN_GET_AFEN(n) \
 		PIN_GET_PUDCLK(n)
 
-#define PIN_SET_FSEL(n) template<> void gpio_regs<pinN::p##n>::setFSEL(mode p) \
+#define PIN_SET_FSEL(n) template<> void gpio_regs<n>::setFSEL(mode p) \
 						{regs_.GPFSEL.fld.p##n=p;}
-#define PIN_SET_SET(n) template<> void gpio_regs<pinN::p##n>::setSET()\
-						{GPIO::gpsetclr set; set.fld.p##n=true; regs_.GPSET.reg=set.reg;}
-#define PIN_SET_CLR(n) template<> void gpio_regs<pinN::p##n>::setCLR()\
-						{GPIO::gpsetclr clr; clr.fld.p##n=true; regs_.GPCLR.reg=clr.reg;}
-#define PIN_SET_EDS(n) template<> void gpio_regs<pinN::p##n>::setEDS(event p)\
+#define PIN_SET_SET(n) template<> void gpio_regs<n>::setSET()\
+						{GPIO::gpset set; set.fld.p##n=true; regs_.GPSET.reg=set.reg;}
+#define PIN_SET_CLR(n) template<> void gpio_regs<n>::setCLR()\
+						{GPIO::gpset clr; clr.fld.p##n=true; regs_.GPCLR.reg=clr.reg;}
+#define PIN_SET_EDS(n) template<> void gpio_regs<n>::setEDS( bool p)\
 						{regs_.GPEDS.fld.p##n=p;}
-#define PIN_SET_REN(n) template<> void gpio_regs<pinN::p##n>::setREN(status p)\
+#define PIN_SET_REN(n) template<> void gpio_regs<n>::setREN( bool p)\
 						{regs_.GPREN.fld.p##n=p;}
-#define PIN_SET_FEN(n) template<> void gpio_regs<pinN::p##n>::setFEN(status p)\
+#define PIN_SET_FEN(n) template<> void gpio_regs<n>::setFEN( bool p)\
 						{regs_.GPFEN.fld.p##n=p;}
-#define PIN_SET_HEN(n) template<> void gpio_regs<pinN::p##n>::setHEN(status p)\
+#define PIN_SET_HEN(n) template<> void gpio_regs<n>::setHEN( bool p)\
 						{regs_.GPHEN.fld.p##n=p;}
-#define PIN_SET_LEN(n) template<> void gpio_regs<pinN::p##n>::setLEN(status p)\
+#define PIN_SET_LEN(n) template<> void gpio_regs<n>::setLEN( bool p)\
 						{regs_.GPLEN.fld.p##n=p;}
-#define PIN_SET_AREN(n) template<> void gpio_regs<pinN::p##n>::setAREN(status p)\
+#define PIN_SET_AREN(n) template<> void gpio_regs<n>::setAREN( bool p)\
 						{regs_.GPAREN.fld.p##n=p;}
-#define PIN_SET_AFEN(n) template<> void gpio_regs<pinN::p##n>::setAFEN(status p)\
+#define PIN_SET_AFEN(n) template<> void gpio_regs<n>::setAFEN( bool p)\
 						{regs_.GPAFEN.fld.p##n=p;}
-#define PIN_SET_PUDCLK(n) template<> void gpio_regs<pinN::p##n>::setPUDCLK(clock p)\
+#define PIN_SET_PUDCLK(n) template<> void gpio_regs<n>::setPUDCLK( bool p)\
 						{regs_.GPPUDCLK.fld.p##n=p;}
 
 
 #define PIN_SET_ALL(n) PIN_SET_FSEL(n) PIN_SET_SET(n) PIN_SET_CLR(n) PIN_SET_EDS(n) PIN_SET_REN(n) \
 		PIN_SET_FEN(n) PIN_SET_HEN(n) PIN_SET_LEN(n) PIN_SET_AREN(n) PIN_SET_AFEN(n) PIN_SET_PUDCLK(n)
 
-#define ADD_2_GPPUDCLK(n) template<> GPIO::gppudclk& gpio_p<pinN::p##n>::add2reg(GPIO::gppudclk& r){r.fld.p##n=assert; return r;}
-#define ADD_2_GPSETCLR(n) template<> GPIO::gpsetclr& gpio_p<pinN::p##n>::add2reg(GPIO::gpsetclr& r){r.fld.p##n=true; return r;}
+#define ADD_2_gpset(n) template<> GPIO::gpset& gpio<n>::add2reg(GPIO::gpset& r){r.fld.p##n=true; return r;}
 
 DEF53(PIN_GET_ALL)
 DEF53(PIN_SET_ALL)
-DEF53(ADD_2_GPPUDCLK)
-DEF53(ADD_2_GPSETCLR)
+DEF53(ADD_2_gpset)
 
 #define __ALL_5__
 
 template<pinN n>
-void gpio_p<n>::gentone(float gz)
+void gpio<n>::gentone(float gz)
 {
 	static std::atomic<unsigned> period;
 	const static float max_gz=float(std::micro::den/2);
@@ -94,10 +92,10 @@ void gpio_p<n>::gentone(float gz)
 			auto l=read();
 			while(period.load())
 			{
-				write(l=(l==hight?low:hight));
+				write(l=(l==level::hight?level::low:level::hight));
 				sleep_for(microseconds(period));
 			}
-			write(low);
+			write(level::low);
 		});
 		t.detach();
 	}
@@ -120,7 +118,7 @@ void gpio_pin::setmode(mode f)
 {
 	switch(pn_)
 	{
-#define CASE_SETMODE(n) case pinN::p##n : {static gpio_p<pinN::p##n> p##n; p##n.setmode(f); return;}
+#define CASE_SETMODE(n) case n : {static gpio<n> p##n; p##n.setmode(f); return;}
 	DEF53(CASE_SETMODE)
 	};
 }
@@ -129,7 +127,7 @@ void gpio_pin::write(level l)
 {
 	switch(pn_)
 	{
-#define CASE_WRITE(n) case pinN::p##n : {static gpio_p<pinN::p##n> p##n; p##n.write(l); return;}
+#define CASE_WRITE(n) case n : {static gpio<n> p##n; p##n.write(l); return;}
 	DEF53(CASE_WRITE)
 	};
 }
@@ -138,7 +136,7 @@ level gpio_pin::read()const
 {
 	switch(pn_)
 	{
-#define CASE_READ(n) case pinN::p##n : {static gpio_p<pinN::p##n> p##n; return p##n.read();}
+#define CASE_READ(n) case n : {static gpio<n> p##n; return p##n.read();}
 	DEF53(CASE_READ)
 	};
 	assert(0);
@@ -149,7 +147,7 @@ void gpio_pin::gentone(float gz)
 {
 	switch(pn_)
 	{
-#define CASE_GENTONE(n) case pinN::p##n : {static gpio_p<pinN::p##n> p##n; p##n.gentone(gz); return;}
+#define CASE_GENTONE(n) case n : {static gpio<n> p##n; p##n.gentone(gz); return;}
 	DEF53(CASE_GENTONE)
 	};
 	assert(0);

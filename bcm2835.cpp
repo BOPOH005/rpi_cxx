@@ -69,7 +69,7 @@ volatile GPIO& bcm2835::registers()
 	return *static_cast<volatile GPIO*>(p_map_.get());
 }
 
-void bcm2835::pullupdown(pull f, const GPIO::gppudclk& reg)
+void bcm2835::pullupdown(pull f, const GPIO::gpset& reg)
 {
 	auto& gpio=registers();
 	gpio.GPPUD.fld.f=f;
@@ -80,10 +80,10 @@ void bcm2835::pullupdown(pull f, const GPIO::gppudclk& reg)
 	gpio.GPPUDCLK.reg=0;
 }
 
-void bcm2835::setlevel(level l, const GPIO::gpsetclr& reg)
+void bcm2835::setlevel(level l, const GPIO::gpset& reg)
 {
 	auto& gpio=registers();
-	if(l==hight)
+	if(l==level::hight)
 		gpio.GPSET.reg=reg.reg;
 	else	
 		gpio.GPCLR.reg=reg.reg;
