@@ -1,14 +1,14 @@
 .PHONY: all clean install work_dirs
 
-OBJ=./obj
-BIN=./bin
-LIB=./lib
+OBJ=.\obj
+BIN=.\bin
+LIB=.\lib
 EXAMPLES=./examples
 
 ifeq ($(OS),Windows_NT)
 	C_PATH=C:\SysGCC\Raspberry\arm-linux-gnueabihf
-	C_LIB=-L$(C_PATH)\lib
-	C_INC=-I$(C_PATH)\include\c++\4.9
+	C_LIB=-L$(C_PATH)\sysroot\usr\lib\arm-linux-gnueabihf
+	C_INC=-I$(C_PATH)\sysroot\usr\include\c++\4.9.2
 	GOOGLE_PATH=../googletest/googletest
 
 work_dirs:
@@ -18,6 +18,9 @@ work_dirs:
 
 $(LIB)/libgtest.a: $(GOOGLE_PATH)/make/gtest.a
 	copy  $(subst /,\,$<) $(subst /,\,$@)
+
+install:
+	pscp -C -p -scp $(wildcard $(BIN)/*)  pi@bopoh.ddns.net:~/projects
 
 else
 	C_PATH=~/Projects/raspberry/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf
@@ -34,6 +37,9 @@ work_dirs:
 	@if [ ! -d $(OBJ) ] ; then mkdir -p $(OBJ); fi 
 	@if [ ! -d $(LIB) ] ; then mkdir -p $(LIB); fi 
 
+install:
+	scp -Cp $(wildcard $(BIN)/*)  pi@bopoh.ddns.net:~/projects
+
 endif
 
 GOOGLE_INC=-I$(GOOGLE_PATH)/include
@@ -49,8 +55,7 @@ all: work_dirs $(BIN)/unit_tests
 clean:
 	rm -rf $(OBJ) $(OBJ) $(LIB) $(BIN)
 
-install:
-	scp -Cp $(wildcard $(BIN)/*)  pi@bopoh.ddns.net:~/projects
+
 
 include $(wildcard $(OBJ)/*.d)
 
