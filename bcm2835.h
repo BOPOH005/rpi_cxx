@@ -45,28 +45,19 @@ enum  mode
 	fun5=0b010
 };
 
-// enum  set
-// {
-// 	no_effect	=0x0,
-// 	on			=0x1
-// };
-
-enum  level 
+// Компилятор gcc не корретно обрабатывает конструкции:
+// enum class level: bool в битовом поле
+// при чтении выдает "погоду" в значении hight
+enum level
 {
 	low		=0x0,
 	hight	=0x1
 };
 
-enum  event
+enum set
 {
-	not_detected	=0x0,
-	detected		=0x1
-};
-
-enum  status
-{
-	disable = 0x0,
-	on 		= 0x1
+	//uncheck	=0x0,
+	on	=0x1
 };
 
 enum pull
@@ -77,11 +68,6 @@ enum pull
 	reserved	= 0x3  // Reserved
 };
 
-enum clock
-{
-	no_effect	= 0x0,
-	assert		= 0x1
-};
 
 //#pragma pack(push,4)
 struct   GPIO
@@ -159,75 +145,79 @@ struct   GPIO
 		} fld;
 	} GPFSEL;
 	unsigned 			:32;
-	union __attribute__((packed, aligned(4))) gpsetclr
+	union __attribute__((packed, aligned(4))) gpset
 	{
 		u_int64_t reg;
 		struct 
 		{
-			bool p0       : 1;
-			bool p1       : 1;
-			bool p2       : 1;
-			bool p3       : 1;
-			bool p4       : 1;
-			bool p5       : 1;
-			bool p6       : 1;
-			bool p7       : 1;
-			bool p8       : 1;
-			bool p9       : 1;
-			bool p10      : 1;
-			bool p11      : 1;
-			bool p12      : 1;
-			bool p13      : 1;
-			bool p14      : 1;
-			bool p15      : 1;
-			bool p16      : 1;
-			bool p17      : 1;
-			bool p18      : 1;
-			bool p19      : 1;
-			bool p20      : 1;
-			bool p21      : 1;
-			bool p22      : 1;
-			bool p23      : 1;
-			bool p24      : 1;
-			bool p25      : 1;
-			bool p26      : 1;
-			bool p27      : 1;
-			bool p28      : 1;
-			bool p29      : 1;
-			bool p30      : 1;
-			bool p31      : 1;
-			bool p32       : 1;
-			bool p33       : 1;
-			bool p34       : 1;
-			bool p35       : 1;
-			bool p36       : 1;
-			bool p37       : 1;
-			bool p38       : 1;
-			bool p39       : 1;
-			bool p40       : 1;
-			bool p41       : 1;
-			bool p42       : 1;
-			bool p43       : 1;
-			bool p44       : 1;
-			bool p45       : 1;
-			bool p46       : 1;
-			bool p47       : 1;
-			bool p48       : 1;
-			bool p49       : 1;
-			bool p50       : 1;
-			bool p51       : 1;
-			bool p52       : 1;
-			bool p53       : 1;
+			set p0       : 1;
+			set p1       : 1;
+			set p2       : 1;
+			set p3       : 1;
+			set p4       : 1;
+			set p5       : 1;
+			set p6       : 1;
+			set p7       : 1;
+			set p8       : 1;
+			set p9       : 1;
+			set p10      : 1;
+			set p11      : 1;
+			set p12      : 1;
+			set p13      : 1;
+			set p14      : 1;
+			set p15      : 1;
+			set p16      : 1;
+			set p17      : 1;
+			set p18      : 1;
+			set p19      : 1;
+			set p20      : 1;
+			set p21      : 1;
+			set p22      : 1;
+			set p23      : 1;
+			set p24      : 1;
+			set p25      : 1;
+			set p26      : 1;
+			set p27      : 1;
+			set p28      : 1;
+			set p29      : 1;
+			set p30      : 1;
+			set p31      : 1;
+			set p32       : 1;
+			set p33       : 1;
+			set p34       : 1;
+			set p35       : 1;
+			set p36       : 1;
+			set p37       : 1;
+			set p38       : 1;
+			set p39       : 1;
+			set p40       : 1;
+			set p41       : 1;
+			set p42       : 1;
+			set p43       : 1;
+			set p44       : 1;
+			set p45       : 1;
+			set p46       : 1;
+			set p47       : 1;
+			set p48       : 1;
+			set p49       : 1;
+			set p50       : 1;
+			set p51       : 1;
+			set p52       : 1;
+			set p53       : 1;
 			unsigned               : 10;
 		}fld;
+		gpset(){reg=0;}
+		gpset(const gpset& r){reg=r.reg;}
+		template<class _T>
+		gpset& operator<<(_T pin){ pin.add2reg(*this); return *this;}
 	} GPSET;
 	unsigned			:32;
-	gpsetclr	GPCLR;
+	gpset	GPCLR;
 	unsigned			:32;
 	union __attribute__((packed, aligned(4))) gplev
 	{
 		u_int64_t reg;
-		struct levels
+		struct gplevbits
 		{
 			level p0       : 1;
 			level p1       : 1;
@@ -283,145 +273,24 @@ struct   GPIO
 			level p51       : 1;
 			level p52       : 1;
 			level p53       : 1;
-			unsigned	          : 10;
-		} fld;
-	} /*const*/ GPLEV;
+			unsigned               : 10;
+		}fld;
+		gplev(){reg=0;}
+	} const GPLEV;
 	unsigned			:32;
-	union __attribute__((packed, aligned(4))) gpeds
-	{
-		u_int64_t reg;
-		struct 
-		{
-			event p0	:1;
-			event p1	:1;
-			event p2	:1;
-			event p3	:1;
-			event p4	:1;
-			event p5	:1;
-			event p6	:1;
-			event p7	:1;
-			event p8	:1;
-			event p9	:1;
-			event p10	:1;
-			event p11	:1;
-			event p12	:1;
-			event p13	:1;
-			event p14	:1;
-			event p15	:1;
-			event p16	:1;
-			event p17	:1;
-			event p18	:1;
-			event p19	:1;
-			event p20	:1;
-			event p21	:1;
-			event p22	:1;
-			event p23	:1;
-			event p24	:1;
-			event p25	:1;
-			event p26	:1;
-			event p27	:1;
-			event p28	:1;
-			event p29	:1;
-			event p30	:1;
-			event p31	:1;
-			event p32	:1;
-			event p33	:1;
-			event p34	:1;
-			event p35	:1;
-			event p36	:1;
-			event p37	:1;
-			event p38	:1;
-			event p39	:1;
-			event p40	:1;
-			event p41	:1;
-			event p42	:1;
-			event p43	:1;
-			event p44	:1;
-			event p45	:1;
-			event p46	:1;
-			event p47	:1;
-			event p48	:1;
-			event p49	:1;
-			event p50	:1;
-			event p51	:1;
-			event p52	:1;
-			event p53	:1;
-			unsigned		:10;
-		} fld;		
-	} GPEDS;
+	gpset	GPEDS;
 	unsigned			:32;
-	union __attribute__((packed, aligned(4))) stats
-	{
-		u_int64_t reg;
-		struct
-		{
-			status p0 : 1;
-			status p1 : 1;
-			status p2 : 1;
-			status p3 : 1;
-			status p4 : 1;
-			status p5 : 1;
-			status p6 : 1;
-			status p7 : 1;
-			status p8 : 1;
-			status p9 : 1;
-			status p10 : 1;
-			status p11 : 1;
-			status p12 : 1;
-			status p13 : 1;
-			status p14 : 1;
-			status p15 : 1;
-			status p16 : 1;
-			status p17 : 1;
-			status p18 : 1;
-			status p19 : 1;
-			status p20 : 1;
-			status p21 : 1;
-			status p22 : 1;
-			status p23 : 1;
-			status p24 : 1;
-			status p25 : 1;
-			status p26 : 1;
-			status p27 : 1;
-			status p28 : 1;
-			status p29 : 1;
-			status p30 : 1;
-			status p31 : 1;
-			status p32 : 1;
-			status p33 : 1;
-			status p34 : 1;
-			status p35 : 1;
-			status p36 : 1;
-			status p37 : 1;
-			status p38 : 1;
-			status p39 : 1;
-			status p40 : 1;
-			status p41 : 1;
-			status p42 : 1;
-			status p43 : 1;
-			status p44 : 1;
-			status p45 : 1;
-			status p46 : 1;
-			status p47 : 1;
-			status p48 : 1;
-			status p49 : 1;
-			status p50 : 1;
-			status p51 : 1;
-			status p52 : 1;
-			status p53 : 1;
-			unsigned : 10;
-		} fld;
-	} GPREN;
+	gpset 	GPREN;
 	unsigned			: 32;
-	stats  GPFEN;
+	gpset  	GPFEN;
 	unsigned			: 32;
-	stats  GPHEN;
+	gpset  	GPHEN;
 	unsigned			: 32;
-	stats  GPLEN;
+	gpset  	GPLEN;
 	unsigned			: 32;
-	stats  GPAREN;
+	gpset  	GPAREN;
 	unsigned			: 32;
-	stats  GPAFEN;
+	gpset  	GPAFEN;
 	unsigned			: 32;
 	union __attribute__((packed, aligned(4))) gppud
 	{
@@ -431,75 +300,8 @@ struct   GPIO
 			pull f		: 2;
 			unsigned	: 30;
 		} fld;
-	} GPPUD;
-	union __attribute__((packed, aligned(4))) gppudclk
-	{
-		u_int64_t reg;
-		struct
-		{
-			clock p0 : 1;
-			clock p1 : 1;
-			clock p2 : 1;
-			clock p3 : 1;
-			clock p4 : 1;
-			clock p5 : 1;
-			clock p6 : 1;
-			clock p7 : 1;
-			clock p8 : 1;
-			clock p9 : 1;
-			clock p10 : 1;
-			clock p11 : 1;
-			clock p12 : 1;
-			clock p13 : 1;
-			clock p14 : 1;
-			clock p15 : 1;
-			clock p16 : 1;
-			clock p17 : 1;
-			clock p18 : 1;
-			clock p19 : 1;
-			clock p20 : 1;
-			clock p21 : 1;
-			clock p22 : 1;
-			clock p23 : 1;
-			clock p24 : 1;
-			clock p25 : 1;
-			clock p26 : 1;
-			clock p27 : 1;
-			clock p28 : 1;
-			clock p29 : 1;
-			clock p30 : 1;
-			clock p31 : 1;
-			clock p32 : 1;
-			clock p33 : 1;
-			clock p34 : 1;
-			clock p35 : 1;
-			clock p36 : 1;
-			clock p37 : 1;
-			clock p38 : 1;
-			clock p39 : 1;
-			clock p40 : 1;
-			clock p41 : 1;
-			clock p42 : 1;
-			clock p43 : 1;
-			clock p44 : 1;
-			clock p45 : 1;
-			clock p46 : 1;
-			clock p47 : 1;
-			clock p48 : 1;
-			clock p49 : 1;
-			clock p50 : 1;
-			clock p51 : 1;
-			clock p52 : 1;
-			clock p53 : 1;
-			unsigned : 10;
-		} fld;
-
-		gppudclk(){reg=0;}
-		gppudclk(const gppudclk&r){reg=r.reg;}
-		
-		template<class _T>
-		gppudclk& operator<<(_T pin){ pin.add2reg(*this); return *this;}
-	} GPPUDCLK;
+	} 			GPPUD;
+	gpset 	GPPUDCLK;
 	unsigned			: 32;
 	unsigned			: 32;
 	unsigned			: 32;
@@ -508,10 +310,16 @@ struct   GPIO
 };
 //#pragma push
 
+
 class bcm2835 {
 public:
 	static bcm2835& instance();
 	volatile GPIO& registers();
+
+	// void	setmode(mode m, const GPIO::gpfsel& reg);
+	void	pullupdown(pull f, const GPIO::gpset& reg);
+	void	setlevel(level l, const GPIO::gpset& reg);
+
 private:
 	std::unique_ptr<int, 	fcloser>  	mem_fd_;
 	std::unique_ptr<void, 	mcloser> 	p_map_;

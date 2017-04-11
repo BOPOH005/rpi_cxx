@@ -5,65 +5,7 @@
 
 namespace rpi_cxx
 {
-
-enum /*class*/ pinN
-{
-	p0,
-	p1,
-	p2,
-	p3,
-	p4,
-	p5,
-	p6,
-	p7,
-	p8,
-	p9,
-	p10,
-	p11,
-	p12,
-	p13,
-	p14,
-	p15,
-	p16,
-	p17,
-	p18,
-	p19,
-	p20,
-	p21,
-	p22,
-	p23,
-	p24,
-	p25,
-	p26,
-	p27,
-	p28,
-	p29,
-	p30,
-	p31,
-	p32,
-	p33,
-	p34,
-	p35,
-	p36,
-	p37,
-	p38,
-	p39,
-	p40,
-	p41,
-	p42,
-	p43,
-	p44,
-	p45,
-	p46,
-	p47,
-	p48,
-	p49,
-	p50,
-	p51,
-	p52,
-	p53
-};
-
+typedef  uint8_t pinN;
 
 template<pinN p>
 class gpio_regs
@@ -73,48 +15,48 @@ public:
 
 	mode 	getFSEL()const;
 	level	getLEV()const;
-	event	getEDS()const;
-	status	getREN()const;
-	status	getFEN()const;
-	status	getHEN()const;
-	status	getLEN()const;
-	status	getAREN()const;
-	status	getAFEN()const;
-	clock	getPUDCLK()const;
+	set		getEDS()const;
+	set 	getREN()const;
+	set 	getFEN()const;
+	set 	getHEN()const;
+	set 	getLEN()const;
+	set 	getAREN()const;
+	set 	getAFEN()const;
+	set 	getPUDCLK()const;
 
 	void setFSEL(mode);
 	void setSET();
 	void setCLR();
-	void setEDS(event);
-	void setREN(status);
-	void setFEN(status);
-	void setHEN(status);
-	void setLEN(status);
-	void setAREN(status);
-	void setAFEN(status);
-	void setPUDCLK(clock);
+	void setEDS(set );
+	void setREN(set );
+	void setFEN(set );
+	void setHEN(set );
+	void setLEN(set );
+	void setAREN(set );
+	void setAFEN(set );
+	void setPUDCLK(set );
 
 	volatile GPIO	&regs_;
 
 	gpio_regs():regs_(bcm2835::instance().registers()) {};
 };   
 
-void		pullupdown(pull f, const GPIO::gppudclk& reg);
 
 template<pinN p>  
-class gpio_p
+class gpio
 {
 public:
-					gpio_p() :_regs(gpio_regs<p>::instance()) {}
-					gpio_p(mode f) :_regs(gpio_regs<p>::instance()) {setmode(f);}
-	void			setmode(mode f){_regs.setFSEL(f);}
+					gpio() :_regs(gpio_regs<p>::instance()) {}
+					gpio(mode f) :_regs(gpio_regs<p>::instance()) {setmode(f);}
+	void			setmode(mode f){if(f!=mode::in)_regs.setFSEL(mode::in);_regs.setFSEL(f);}
+	mode			getmode()const{return _regs.getFSEL();}
 	gpio_regs<p>&	regs() { return _regs; }
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
-	gpio_p<p>& 		operator=(level s){write(s);return *this;}
+	gpio<p>& 		operator=(level s){write(s);return *this;}
 					operator level() const { return read(); }
 	
 	template<class _P=std::chrono::milliseconds>
-	gpio_p<p>& 		operator<<(std::pair<level, _P> s)
+	gpio<p>& 		operator<<(std::pair<level, _P> s)
 					{
 						write(s.first);
 						std::this_thread::sleep_for(s.second);
@@ -123,7 +65,7 @@ public:
 	level			read()const { return _regs.getLEV(); }
 	void			gentone(float freq);
 	
-	GPIO::gppudclk& add2reg(GPIO::gppudclk& r);
+	GPIO::gpset& add2reg(GPIO::gpset& r);
 private:
 	gpio_regs<p> &_regs;
 };

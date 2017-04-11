@@ -10,9 +10,9 @@ using namespace std::chrono;
 template<pinN tilt, pinN leg> 
 void tiltswitch()
 {
-    gpio_p<tilt> p_t(in);
-    gpio_p<leg> p_l(out);
-    level status=low;
+    gpio<tilt> p_t(mode::in);
+    gpio<leg> p_l(mode::out);
+    level status=level::low;
     p_l=status;
 
     while(1)
@@ -21,7 +21,7 @@ void tiltswitch()
         if(l!=status)
         {
             p_l=status=l;
-            std::cout << (l==hight?"on":"off") << std::endl;
+            std::cout << (l==level::hight?"on":"off") << std::endl;
         }
     }
 }
@@ -34,7 +34,7 @@ int main (void)
 	try
 	{
         std::cout << "Управление на основе шаблонов" << std::endl;
-        tiltswitch<pinN::p17,pinN::p18>();
+        tiltswitch<17,18>();
 	}
 	catch (std::runtime_error err)
 	{

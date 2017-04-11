@@ -13,14 +13,15 @@ std::atomic<bool> quit;
 template<pinN b, pinN l>
 void button()
 {
-    gpio_p<b> p_b(in);
+    gpio<b> p_b(mode::in);
     //p_b=hight;
-    GPIO::gppudclk reg;
-    pullupdown(down, reg << p_b);
+    GPIO::gpset reg;
+    auto& bcm=bcm2835::instance();
+    bcm.pullupdown(pull::down, reg << p_b);
     
     std::cout << std::hex << reg.reg << std::endl;
 
-    gpio_p<l> p_l(out);
+    gpio<l> p_l(mode::out);
     level status=p_b;
     p_l=status;
     for(unsigned i=0; !quit; ) 
@@ -29,10 +30,10 @@ void button()
         if(lt!=status)
         {
             p_l=status=lt;
-            std::cout << i++ << (lt==hight?" on":" off") << std::endl;
+            std::cout << i++ << (lt==level::hight?" on":" off") << std::endl;
         }
     }
-    pullupdown(off, reg);    
+    bcm.pullupdown(pull::off, reg);    
 }
 
 int main (void)
@@ -53,7 +54,7 @@ int main (void)
         th.detach();
         
         std::cout << "Управление на основе шаблонов" << std::endl;
-        button<pinN::p18,pinN::p17>();
+        button<18,17>();
 	}
 	catch (std::runtime_error err)
 	{

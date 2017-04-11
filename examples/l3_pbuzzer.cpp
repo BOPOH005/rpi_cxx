@@ -10,7 +10,7 @@ using namespace std::chrono;
 template<pinN n>
 void pbuzzer_pin()
 {
-    gpio_p<n> p(out);
+    gpio<n> p(out);
 
     p.gentone(261.63);
     sleep_for(milliseconds(200));
@@ -49,7 +49,7 @@ int main (void)
 	try
 	{
         std::cout << "Управление на основе шаблонов" << std::endl;
-        pbuzzer_pin<pinN::p18>();
+        pbuzzer_pin<18>();
 	}
 	catch (std::runtime_error err)
 	{
