@@ -96,3 +96,30 @@ TEST(GPIO__gpset, Test_multiblink)
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_TRUE(p1==level::low && p2==level::low);
 }
+
+TEST(GPIO_detect, pinBlink)
+{
+    try
+    {
+    gpio<17> p1(mode::out);
+    gpio<18> p2(mode::in);
+
+    p2.setdetector(RISING | FALLING | HIGHT | LOW | ARISING | AFILLING , []
+    {
+
+    });
+
+    GPIO::gpset reg;
+    auto& bcm=bcm2835::instance();
+    bcm::detect
+    }
+    catch (std::runtime_error err)
+    {
+	FAIL() << "Ошибка! Проверте запуск с sudo";
+    }
+    catch (...)
+    {
+	FAIL() << "Нeизвестное исключение";
+    }
+}
+
