@@ -27,7 +27,7 @@ public:
 	void setFSEL(mode);
 	void setSET();
 	void setCLR();
-	void setEDS(set );
+	void setEDS();
 	void setREN(set );
 	void setFEN(set );
 	void setHEN(set );
@@ -54,7 +54,7 @@ public:
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
 	gpio<p>& 		operator=(level s){write(s);return *this;}
 					operator level() const { return read(); }
-	set				checkevent()const{return _regs.getEDS();}				
+	set				checkevent(){auto e=_regs.getEDS();if(e==set::on)_regs.setEDS(); return e;}				
 	
 	template<class _P=std::chrono::milliseconds>
 	gpio<p>& 		operator<<(std::pair<level, _P> s)

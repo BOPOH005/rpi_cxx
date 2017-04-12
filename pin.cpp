@@ -50,8 +50,8 @@ gpio_regs<p> &gpio_regs<p>::instance()
 						{GPIO::gpset s; s.fld.p##n=set::on; regs_.GPSET.reg=s.reg;}
 #define PIN_SET_CLR(n) template<> void gpio_regs<n>::setCLR()\
 						{GPIO::gpset clr; clr.fld.p##n=set::on; regs_.GPCLR.reg=clr.reg;}
-#define PIN_SET_EDS(n) template<> void gpio_regs<n>::setEDS( set p)\
-						{regs_.GPEDS.fld.p##n=p;}
+#define PIN_SET_EDS(n) template<> void gpio_regs<n>::setEDS()\
+						{GPIO::gpset evt; evt.fld.p##n=set::on; regs_.GPEDS.reg=evt.reg;}
 #define PIN_SET_REN(n) template<> void gpio_regs<n>::setREN( set p)\
 						{regs_.GPREN.fld.p##n=p;}
 #define PIN_SET_FEN(n) template<> void gpio_regs<n>::setFEN( set p)\

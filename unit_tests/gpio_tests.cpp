@@ -103,33 +103,25 @@ TEST(GPIO_detect, RISING)
     {
     gpio<1> p1(mode::out);
     gpio<2> p2(mode::out);
-    
-    p1=level::low;
-    p2=level::hight;
-
-    p1.regs().setEDS(set::on);
-    p2.regs().setEDS(set::on);
     auto& bcm=bcm2835::instance(); 
     GPIO::gpset reg;
-    
+
+    p1=level::low;
+    p2=level::hight; // может породить событие
+
     bcm.detect(detectmode::RISING, 
         reg << p1 << p2);
 
-    std::cout << bcm.registers().GPEDS << std::endl;
+    p1.checkevent(); 
+    p2.checkevent(); //сбрасываем ренее возникшее событие
 
     p1=level::hight;
     p2=level::low;
 
-    std::cout << bcm.registers().GPEDS << std::endl;
-
     EXPECT_TRUE(p1.checkevent()==set::on);
     EXPECT_TRUE(p2.checkevent()!=set::on);
 
-    bcm.detect(detectmode::RISING, 
-        GPIO::gpset{});
-    //bcm.registers().GPEDS.reg=0;
-    p1.regs().setEDS(set::on);
-    p2.regs().setEDS(set::on);
+    bcm.undetect_all(detectmode::RISING);
     }
     catch (std::runtime_error err)
     {
@@ -141,3 +133,74 @@ TEST(GPIO_detect, RISING)
     }
 }
 
+TEST(GPIO_detect, FALLING)
+{
+    try 
+    {
+    gpio<3> p1(mode::out);
+    gpio<4> p2(mode::out);
+    auto& bcm=bcm2835::instance(); 
+    GPIO::gpset reg; 
+
+    p1=level::low; // может породить событие
+    p2=level::hight; 
+   
+    bcm.detect(detectmode::FALLING, 
+        reg << p1 << p2);
+
+    p1.checkevent(); //сбрасываем ренее возникшее событие
+    p2.checkevent();
+
+    p1=level::hight;
+    p2=level::low;
+
+    EXPECT_TRUE(p1.checkevent()!=set::on);
+    EXPECT_TRUE(p2.checkevent()==set::on);
+
+    bcm.undetect_all(detectmode::FALLING);
+    }
+    catch (std::runtime_error err)
+    {
+	FAIL() << "Ошибка! Проверте запуск с sudo";
+    }
+    catch (...)
+    {
+	FAIL() << "Нeизвестное исключение";
+    }
+}
+
+TEST(GPIO_detect, RISING_FALLING)
+{
+    try 
+    {
+    gpio<5> p1(mode::out);
+    gpio<6> p2(mode::out);
+    auto& bcm=bcm2835::instance(); 
+    GPIO::gpset reg; 
+
+    p1=level::low; // может породить событие
+    p2=level::hight; // может породить событие
+   
+    bcm.detect(detectmode::FALLING | detectmode::RISING, 
+        reg << p1 << p2);
+
+    p1.checkevent(); //сбрасываем ренее возникшее событие
+    p2.checkevent(); //сбрасываем ренее возникшее событие
+
+    p1=level::hight;
+    p2=level::low;
+
+    EXPECT_TRUE(p2.checkevent()==set::on);
+    EXPECT_TRUE(p1.checkevent()==set::on);
+
+    bcm.undetect_all(detectmode::FALLING | detectmode::RISING);
+    }
+    catch (std::runtime_error err)
+    {
+	FAIL() << "Ошибка! Проверте запуск с sudo";
+    }
+    catch (...)
+    {
+	FAIL() << "Нeизвестное исключение";
+    }
+}

@@ -109,6 +109,10 @@ void bcm2835::detect(detectmode mode, const GPIO::gpset& reg)
 		gpio.GPAFEN.reg=reg.reg;
 }
 
+void bcm2835::undetect_all(detectmode mode)
+{
+	detect(mode, GPIO::gpset{});
+}
 
 std::ostream &operator<<(std::ostream &os, const volatile GPIO::gpset &s)
 {

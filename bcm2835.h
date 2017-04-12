@@ -310,7 +310,7 @@ struct   GPIO
 };
 //#pragma push
 
-enum  detectmode
+enum class detectmode: int8_t
 {
      RISING  = 0b000001,
      FALLING = 0b000010, 
@@ -321,6 +321,9 @@ enum  detectmode
 	 None
 };
 
+inline detectmode operator|(detectmode a, detectmode b){return (detectmode)((int)a|(int)b);}
+inline bool operator&(detectmode a, detectmode b){return (bool)((int)a&(int)b);}
+
 class bcm2835 {
 public:
 	static bcm2835& instance();
@@ -330,6 +333,7 @@ public:
 	void	pullupdown(pull f, const GPIO::gpset& reg);
 	void	setlevel(level l, const GPIO::gpset& reg);
 	void	detect(detectmode mode, const GPIO::gpset& reg);
+	void	undetect_all(detectmode mode);
 
 private:
 	std::unique_ptr<int, 	fcloser>  	mem_fd_;
