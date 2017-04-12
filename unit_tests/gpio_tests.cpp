@@ -101,16 +101,17 @@ TEST(GPIO_detect, RISING)
 {
     try 
     {
-    gpio<15> p1(mode::out);
-    gpio<16> p2(mode::out);
+    gpio<1> p1(mode::out);
+    gpio<2> p2(mode::out);
     
     p1=level::low;
     p2=level::hight;
 
+    p1.regs().setEDS(set::on);
+    p2.regs().setEDS(set::on);
     auto& bcm=bcm2835::instance(); 
     GPIO::gpset reg;
-    bcm.registers().GPEDS.reg=0;
-
+    
     bcm.detect(detectmode::RISING, 
         reg << p1 << p2);
 
@@ -126,7 +127,9 @@ TEST(GPIO_detect, RISING)
 
     bcm.detect(detectmode::RISING, 
         GPIO::gpset{});
-    bcm.registers().GPEDS.reg=0;
+    //bcm.registers().GPEDS.reg=0;
+    p1.regs().setEDS(set::on);
+    p2.regs().setEDS(set::on);
     }
     catch (std::runtime_error err)
     {
