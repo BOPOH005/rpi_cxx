@@ -48,7 +48,7 @@ class gpio
 public:
 					gpio() :_regs(gpio_regs<p>::instance()) {}
 					gpio(mode f) :_regs(gpio_regs<p>::instance()) {setmode(f);}
-	void			setmode(mode f){if(f!=mode::in)_regs.setFSEL(mode::in);_regs.setFSEL(f);}
+	void			setmode(mode f){_regs.setFSEL(mode::in);if(f!=mode::in)_regs.setFSEL(f);}
 	mode			getmode()const{return _regs.getFSEL();}
 	gpio_regs<p>&	regs() { return _regs; }
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }

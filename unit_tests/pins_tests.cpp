@@ -8,6 +8,14 @@
 
 using namespace rpi_cxx;
 
+void setmode(int n, volatile unsigned *GPFSEL, bool out)
+{
+	const int reg = n / 10;                             
+	const int offset = (n % 10) * 3;               
+	GPFSEL[reg] &= ~(0b111<<offset);
+	if(out)GPFSEL[reg] |= (0b001<<offset);                                          
+}
+
 TEST(PIN, TestSpeed)
 {
 #define DEF31(macro) macro(0) macro(1) macro(2) macro(3) macro(4) macro(5) macro(6) macro(7) \
@@ -19,7 +27,7 @@ TEST(PIN, TestSpeed)
 #define DEF_PIN_N(n) n,
 	DEF31(DEF_PIN_N) 0};
 
-#define DEF_PINREGS(n) auto sp##n = gpio_regs<n>::instance();
+#define DEF_PINREGS(n) gpio<n> sp##n;
     DEF31(DEF_PINREGS)
 
     const size_t count = 100000;
@@ -30,40 +38,34 @@ TEST(PIN, TestSpeed)
 #define SET_FSEL_1(n) p[n].setmode(mode::out);
 	DEF31(SET_FSEL_1)
     }
+	auto t1_1 = std::chrono::high_resolution_clock::now();
+	
     auto &regs = bcm2835::instance().registers();
     volatile unsigned *GPFSEL = reinterpret_cast<volatile unsigned *>(&regs.GPFSEL);
-    auto t2 = std::chrono::high_resolution_clock::now();
 
+    auto t2 = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < count; ++i)
     {
-#define SET_FSEL_3(n)                                 \
-    {                                                 \
-	int reg = n / 10;                             \
-	int offset = (n % 10) * 3;                    \
-	GPFSEL[reg] &= ~((0b111 & ~0b001) << offset); \
-	GPFSEL[reg] |= ((0b111 & 0b000) << offset);   \
-    }
+#define SET_FSEL_3(n) setmode(n, GPFSEL, true);
+    
 	DEF31(SET_FSEL_3)
     }
-    auto t4 = std::chrono::high_resolution_clock::now();
-
+	    
+	auto t4 = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < count; ++i)
     {
-#define SET_FSEL_4(n) sp##n.setFSEL(mode::out);
-	//regs.GPFSEL.fld.p##n = mode::out;
+#define SET_FSEL_4(n) sp##n.setmode(mode::out);
 
 	DEF31(SET_FSEL_4)
     }
     auto t5 = std::chrono::high_resolution_clock::now();
 
-    auto d1 = (t2 - t1).count();
+    auto d1 = (t1_1 - t1).count();
     auto d2 = (t4 - t2).count();
-    //auto d3 = (t4-t3).count();
     auto d4 = (t5 - t4).count();
-    std::cout << "GPFSEL.fld.p	=" << d4 << std::endl
+    std::cout << "gpio<>	=" << d4 << std::endl
 	      << "bit manual	=" << d2 << " more " << ((float)(d2 - d4) / (float)d4) * 100 << "%" << std::endl
 	      << "switch   	=" << d1 << " more " << ((float)(d1 - d4) / (float)d4) * 100 << "%" << std::endl;
-    //		<< "function[] =" << d2 << " more " << ((float)(d2-d4)/(float)d4)*100 << "%" << std::endl;
 
     ASSERT_TRUE(d4 <= d1 && d4 <= d2);
 }
