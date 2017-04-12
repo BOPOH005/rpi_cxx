@@ -310,6 +310,16 @@ struct   GPIO
 };
 //#pragma push
 
+enum  detectmode
+{
+     RISING  = 0b000001,
+     FALLING = 0b000010, 
+     HIGHT   = 0b000100,  
+     LOW     = 0b001000,
+     ARISING = 0b010000,
+     AFILLING= 0b100000,
+	 None
+};
 
 class bcm2835 {
 public:
@@ -319,6 +329,7 @@ public:
 	// void	setmode(mode m, const GPIO::gpfsel& reg);
 	void	pullupdown(pull f, const GPIO::gpset& reg);
 	void	setlevel(level l, const GPIO::gpset& reg);
+	void	detect(detectmode mode, const GPIO::gpset& reg);
 
 private:
 	std::unique_ptr<int, 	fcloser>  	mem_fd_;
@@ -326,6 +337,12 @@ private:
 
 	bcm2835();
 };
+
+
+std::ostream &operator<<(std::ostream &os, const volatile GPIO::gpset &s);
+std::ostream &operator<<(std::ostream &os, const level s);
+std::ostream &operator<<(std::ostream &os, const volatile GPIO::gplev &s);
+std::ostream &operator<<(std::ostream &os, const set s);
 
 
 } /* namespace rpi_cxx */

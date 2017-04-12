@@ -54,6 +54,7 @@ public:
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
 	gpio<p>& 		operator=(level s){write(s);return *this;}
 					operator level() const { return read(); }
+	set				checkevent()const{return _regs.getEDS();}				
 	
 	template<class _P=std::chrono::milliseconds>
 	gpio<p>& 		operator<<(std::pair<level, _P> s)

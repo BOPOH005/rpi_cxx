@@ -97,21 +97,36 @@ TEST(GPIO__gpset, Test_multiblink)
     EXPECT_TRUE(p1==level::low && p2==level::low);
 }
 
-TEST(GPIO_detect, pinBlink)
+TEST(GPIO_detect, RISING)
 {
-    try
+    try 
     {
-    gpio<17> p1(mode::out);
-    gpio<18> p2(mode::in);
+    gpio<15> p1(mode::out);
+    gpio<16> p2(mode::out);
+    
+    p1=level::low;
+    p2=level::hight;
 
-    p2.setdetector(RISING | FALLING | HIGHT | LOW | ARISING | AFILLING , []
-    {
-
-    });
-
+    auto& bcm=bcm2835::instance(); 
     GPIO::gpset reg;
-    auto& bcm=bcm2835::instance();
-    bcm::detect
+    bcm.registers().GPEDS.reg=0;
+
+    bcm.detect(detectmode::RISING, 
+        reg << p1 << p2);
+
+    std::cout << bcm.registers().GPEDS << std::endl;
+
+    p1=level::hight;
+    p2=level::low;
+
+    std::cout << bcm.registers().GPEDS << std::endl;
+
+    EXPECT_TRUE(p1.checkevent()==set::on);
+    EXPECT_TRUE(p2.checkevent()!=set::on);
+
+    bcm.detect(detectmode::RISING, 
+        GPIO::gpset{});
+    bcm.registers().GPEDS.reg=0;
     }
     catch (std::runtime_error err)
     {
