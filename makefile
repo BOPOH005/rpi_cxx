@@ -37,8 +37,10 @@ work_dirs:
 	@if [ ! -d $(OBJ) ] ; then mkdir -p $(OBJ); fi 
 	@if [ ! -d $(LIB) ] ; then mkdir -p $(LIB); fi 
 
+RPI_HOST=bopoh.ddns.net
+
 install:
-	scp -Cp $(wildcard $(BIN)/*)  pi@bopoh.ddns.net:~/projects
+	scp -Cp $(wildcard $(BIN)/*)  pi@$(RPI_HOST):~/projects
 
 endif
 

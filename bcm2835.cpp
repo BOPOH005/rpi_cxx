@@ -111,7 +111,39 @@ void bcm2835::detect(detectmode mode, const GPIO::gpset& reg)
 
 void bcm2835::undetect_all(detectmode mode)
 {
-	detect(mode, GPIO::gpset{});
+	GPIO::gpset reg;
+	auto& gpio=registers();
+	if(mode & detectmode::RISING)
+	{
+		reg.reg|=gpio.GPREN.reg;
+		gpio.GPREN.reg=0;
+	}
+	if(mode & detectmode::FALLING)
+	{
+		reg.reg|=gpio.GPFEN.reg;
+		gpio.GPFEN.reg=0;
+	}
+    if(mode & detectmode::HIGHT)
+	{
+		reg.reg|=gpio.GPHEN.reg;
+		gpio.GPHEN.reg=0;
+	}
+    if(mode & detectmode::LOW)
+	{
+		reg.reg|=gpio.GPLEN.reg;
+		gpio.GPLEN.reg=0;
+	}
+    if(mode & detectmode::ARISING)
+	{
+		reg.reg|=gpio.GPAREN.reg;
+		gpio.GPAREN.reg=0;
+	}
+    if(mode & detectmode::AFILLING)
+	{
+		reg.reg|=gpio.GPAFEN.reg;
+		gpio.GPAREN.reg=0;
+	}
+	gpio.GPEDS.reg=reg.reg;
 }
 
 std::ostream &operator<<(std::ostream &os, const volatile GPIO::gpset &s)

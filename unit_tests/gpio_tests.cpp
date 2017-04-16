@@ -190,10 +190,88 @@ TEST(GPIO_detect, RISING_FALLING)
     p1=level::hight;
     p2=level::low;
 
-    EXPECT_TRUE(p2.checkevent()==set::on);
     EXPECT_TRUE(p1.checkevent()==set::on);
-
+    EXPECT_TRUE(p2.checkevent()==set::on);
+    
     bcm.undetect_all(detectmode::FALLING | detectmode::RISING);
+    }
+    catch (std::runtime_error err)
+    {
+	FAIL() << "Ошибка! Проверте запуск с sudo";
+    }
+    catch (...)
+    {
+	FAIL() << "Нeизвестное исключение";
+    }
+}
+
+TEST(GPIO_detect, HIGHT)
+{
+    try 
+    {
+    gpio<7> p1(mode::out);
+    gpio<8> p2(mode::out);
+    auto& bcm=bcm2835::instance(); 
+    GPIO::gpset reg; 
+
+    p1=level::low; 
+    p2=level::hight; 
+   
+    bcm.detect(detectmode::HIGHT, 
+        reg << p1 << p2);
+
+    EXPECT_TRUE(p1.checkevent()!=set::on); 
+    EXPECT_TRUE(p2.checkevent()==set::on);
+    EXPECT_TRUE(p2.checkevent()==set::on); //событие не сбрасывается
+
+    p1=level::hight;
+    p2=level::low;
+
+    EXPECT_TRUE(p1.checkevent()==set::on);
+    EXPECT_TRUE(p1.checkevent()==set::on); //событие не сбрасывается
+    EXPECT_TRUE(p2.checkevent()==set::on);
+    EXPECT_TRUE(p2.checkevent()!=set::on); //событие сбрасывается
+
+    bcm.undetect_all(detectmode::HIGHT);
+    }
+    catch (std::runtime_error err)
+    {
+	FAIL() << "Ошибка! Проверте запуск с sudo";
+    }
+    catch (...)
+    {
+	FAIL() << "Нeизвестное исключение";
+    }
+}
+
+TEST(GPIO_detect, LOW)
+{
+    try 
+    {
+    gpio<9> p1(mode::out);
+    gpio<10> p2(mode::out);
+    auto& bcm=bcm2835::instance(); 
+    GPIO::gpset reg; 
+
+    p1=level::low; 
+    p2=level::hight; 
+   
+    bcm.detect(detectmode::LOW, 
+        reg << p1 << p2);
+
+    EXPECT_TRUE(p1.checkevent()==set::on); 
+    EXPECT_TRUE(p1.checkevent()==set::on); //событие не сбрасывается
+    EXPECT_TRUE(p2.checkevent()!=set::on);
+
+    p1=level::hight;
+    p2=level::low;
+
+    EXPECT_TRUE(p1.checkevent()==set::on);
+    EXPECT_TRUE(p1.checkevent()!=set::on); //событие сбрасывается
+    EXPECT_TRUE(p2.checkevent()==set::on);
+    EXPECT_TRUE(p2.checkevent()==set::on); //событие не сбрасывается
+
+    bcm.undetect_all(detectmode::LOW);
     }
     catch (std::runtime_error err)
     {
