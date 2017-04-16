@@ -1,15 +1,16 @@
 .PHONY: all clean install work_dirs
 
+
+ifeq ($(OS),Windows_NT)
 OBJ=.\obj
 BIN=.\bin
 LIB=.\lib
-EXAMPLES=./examples
+EXAMPLES=.\examples
 
-ifeq ($(OS),Windows_NT)
 	C_PATH=C:\SysGCC\Raspberry\arm-linux-gnueabihf
 	C_LIB=-L$(C_PATH)\sysroot\usr\lib\arm-linux-gnueabihf
 	C_INC=-I$(C_PATH)\sysroot\usr\include\c++\4.9.2
-	GOOGLE_PATH=../googletest/googletest
+	GOOGLE_PATH=..\googletest\googletest
 
 work_dirs:
 	if not exist $(BIN) mkdir $(BIN)
@@ -23,6 +24,12 @@ install:
 	pscp -C -p -scp $(wildcard $(BIN)/*)  pi@bopoh.ddns.net:~/projects
 
 else
+
+OBJ=./obj
+BIN=./bin
+LIB=./lib
+EXAMPLES=./examples
+
 	C_PATH=~/Projects/raspberry/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf
 	C_LIB_PATH=$(C_PATH)/arm-linux-gnueabihf/sysroot/usr/lib
 	C_LIB=-L$(C_LIB_PATH)
