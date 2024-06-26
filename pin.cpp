@@ -45,7 +45,7 @@ gpio_regs<p> &gpio_regs<p>::instance()
 		PIN_GET_PUDCLK(n)
 
 #define PIN_SET_FSEL(n) template<> void gpio_regs<n>::setFSEL(mode p) \
-						{regs_.GPFSEL.fld.p##n=p;}
+						{regs_.GPFSEL.fld.p##n=mode::in;if(p!=mode::in)regs_.GPFSEL.fld.p##n=p;}
 #define PIN_SET_SET(n) template<> void gpio_regs<n>::setSET()\
 						{GPIO::gpset s; s.fld.p##n=set::on; regs_.GPSET.reg=s.reg;}
 #define PIN_SET_CLR(n) template<> void gpio_regs<n>::setCLR()\

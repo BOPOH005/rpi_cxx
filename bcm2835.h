@@ -321,14 +321,20 @@ enum class detectmode: int8_t
 	 None
 };
 
+typedef  uint8_t pinN;
+
 inline detectmode operator|(detectmode a, detectmode b){return (detectmode)((int)a|(int)b);}
 inline bool operator&(detectmode a, detectmode b){return (bool)((int)a&(int)b);}
+
+struct PWM;
 
 class bcm2835 {
 public:
 	static bcm2835& instance();
-	volatile GPIO& registers();
-
+	
+	template<typename T>
+	volatile T& 	registers();
+	
 	// void	setmode(mode m, const GPIO::gpfsel& reg);
 	void	pullupdown(pull f, const GPIO::gpset& reg);
 	void	setlevel(level l, const GPIO::gpset& reg);
@@ -337,9 +343,16 @@ public:
 
 private:
 	std::unique_ptr<int, 	fcloser>  	mem_fd_;
-	std::unique_ptr<void, 	mcloser> 	p_map_;
+	typedef std::unique_ptr<void, 	mcloser> unique_ptr_closer; 
+	
+	unique_ptr_closer 	p_mapGPIO_;
+	unique_ptr_closer 	p_mapPWM_;
+	unique_ptr_closer	p_mapCM_PWM_;
 
 	bcm2835();
+	template<typename T, size_t N>
+	volatile T& registers(unique_ptr_closer &p);
+
 };
 
 

@@ -6,6 +6,8 @@
  */
 
 #include "bcm2835.h"
+#include "pwm.h"
+
 #include <iostream>
 #include <stdexcept>
 #include <fcntl.h>
@@ -23,29 +25,18 @@ using namespace std::this_thread;
 using namespace std::chrono;
 
 namespace rpi_cxx {
-static const size_t RASPBERRY_PI_PERI_BASE(0x3F000000);
-static const size_t GPIO_BASE(RASPBERRY_PI_PERI_BASE+0x200000);
+static const size_t RASPBERRY_PI_PERI_BASE(				0x3F000000);
+static const size_t GPIO_BASE	(RASPBERRY_PI_PERI_BASE+0x00200000);
+static const size_t PWM_BASE	(RASPBERRY_PI_PERI_BASE+0x0020C000);
+static const size_t CM_PWM_BASE (RASPBERRY_PI_PERI_BASE+0x00101000);
 static const size_t BLOCK_SIZE(4*1024);
 
 bcm2835::bcm2835()
 {
-	auto file=open("/dev/gpiomem", O_RDWR | O_SYNC);
+	auto file=open("/dev/mem", O_RDWR | O_SYNC); //gpiomem
 	mem_fd_.reset(file);
 	if ( mem_fd_.get() < 0 ) {
 		static const std::string err(std::strerror(errno)+std::string(" /Failed to open /dev/mem"));
-		std::cerr << err << std::endl;
-		throw std::runtime_error(err);
-	}
-	auto map=mmap(
-				nullptr,
-				BLOCK_SIZE,
-				PROT_READ|PROT_WRITE,
-				MAP_SHARED,
-				mem_fd_.get(),      // File descriptor to physical memory virtual file '/dev/mem'
-				GPIO_BASE);
-	p_map_.reset(map);
-	if (p_map_.get() == MAP_FAILED) {
-		static const std::string err(std::strerror(errno)+std::string(" /Failed call mmap(/dev/mem)"));
 		std::cerr << err << std::endl;
 		throw std::runtime_error(err);
 	}
@@ -67,14 +58,52 @@ bcm2835& bcm2835::instance()
 	return bcm;
 }
 
-volatile GPIO& bcm2835::registers()
+
+template<>
+volatile GPIO& bcm2835::registers<GPIO>()
 {
-	return *static_cast<volatile GPIO*>(p_map_.get());
+	return registers<GPIO, GPIO_BASE>(p_mapGPIO_);
 }
+
+template<>
+volatile PWM& bcm2835::registers<PWM>()
+{
+	return registers<PWM, PWM_BASE>(p_mapPWM_);
+}
+
+
+template<>
+volatile CM_PWM& bcm2835::registers<CM_PWM>()
+{
+	return registers<CM_PWM, CM_PWM_BASE>(p_mapCM_PWM_);
+}
+
+template<typename T, size_t N >
+volatile T& bcm2835::registers(unique_ptr_closer &p)
+{
+	if(!p)
+	{
+		auto map=mmap(
+					nullptr,
+					BLOCK_SIZE,
+					PROT_READ|PROT_WRITE,
+					MAP_SHARED,
+					mem_fd_.get(),      // File descriptor to physical memory virtual file '/dev/mem'
+					N);
+		p.reset(map);
+		if (p.get() == MAP_FAILED) {
+			static const std::string err(std::strerror(errno)+std::string(" /Failed call mmap(/dev/mem)"));
+			std::cerr << err << std::endl;
+			throw std::runtime_error(err);
+		}
+	}
+	return *static_cast<volatile T*>(p.get());
+}
+
 
 void bcm2835::pullupdown(pull f, const GPIO::gpset& reg)
 {
-	auto& gpio=registers();
+	auto& gpio=registers<GPIO>();
 	gpio.GPPUD.fld.f=f;
 	sleep_for(microseconds(10));
 	gpio.GPPUDCLK.reg=reg.reg;
@@ -85,7 +114,7 @@ void bcm2835::pullupdown(pull f, const GPIO::gpset& reg)
 
 void bcm2835::setlevel(level l, const GPIO::gpset& reg)
 {
-	auto& gpio=registers();
+	auto& gpio=registers<GPIO>();
 	if(l==level::hight)
 		gpio.GPSET.reg=reg.reg;
 	else	
@@ -94,7 +123,7 @@ void bcm2835::setlevel(level l, const GPIO::gpset& reg)
 
 void bcm2835::detect(detectmode mode, const GPIO::gpset& reg)
 {
-	auto& gpio=registers();
+	auto& gpio=registers<GPIO>();
 	if(mode & detectmode::RISING)
 		gpio.GPREN.reg=reg.reg;
 	if(mode & detectmode::FALLING)
@@ -112,7 +141,7 @@ void bcm2835::detect(detectmode mode, const GPIO::gpset& reg)
 void bcm2835::undetect_all(detectmode mode)
 {
 	GPIO::gpset reg;
-	auto& gpio=registers();
+	auto& gpio=registers<GPIO>();
 	if(mode & detectmode::RISING)
 	{
 		reg.reg|=gpio.GPREN.reg;

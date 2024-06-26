@@ -1,11 +1,12 @@
 #pragma once
+
 #include "bcm2835.h"
 #include<chrono>
 #include<thread>
 
 namespace rpi_cxx
 {
-typedef  uint8_t pinN;
+
 
 template<pinN p>
 class gpio_regs
@@ -38,7 +39,8 @@ public:
 
 	volatile GPIO	&regs_;
 
-	gpio_regs():regs_(bcm2835::instance().registers()) {};
+private:
+	gpio_regs():regs_(bcm2835::instance().registers<GPIO>()) {};
 };   
 
 
@@ -48,7 +50,7 @@ class gpio
 public:
 					gpio() :_regs(gpio_regs<p>::instance()) {}
 					gpio(mode f) :_regs(gpio_regs<p>::instance()) {setmode(f);}
-	void			setmode(mode f){_regs.setFSEL(mode::in);if(f!=mode::in)_regs.setFSEL(f);}
+	void			setmode(mode f){_regs.setFSEL(f);}
 	mode			getmode()const{return _regs.getFSEL();}
 	gpio_regs<p>&	regs() { return _regs; }
 	void			write(level s) { s==level::hight?_regs.setSET(): _regs.setCLR(); }
@@ -88,11 +90,14 @@ class gpio_pin
 public:
 					gpio_pin(pinN p);
 					gpio_pin(pinN p, mode);
+					gpio_pin(const gpio_pin& pin) :pn_(pin.pn_){}
+	//gpio_pin&		operator=(const gpio_pin& pin){pn_=pin.pn_; return *this;}
+	gpio_pin& 		operator=(level s){write(s);return *this;}				
 	void			setmode(mode);
 	void			write(level s);
 	level			read()const;
 	void			gentone(float freq);
 private:
-	const pinN	pn_;
+	pinN			pn_;
 };
 }
