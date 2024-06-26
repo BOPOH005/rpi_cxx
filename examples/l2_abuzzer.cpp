@@ -29,7 +29,7 @@ int main (void)
         std::cout << "Управление на основе шаблонов" << std::endl;
         abuzzer_pin<18>();
 	}
-	catch (std::runtime_error err)
+	catch (const std::runtime_error &err)
 	{
 		std::cerr << "Ошибка! Проверте запуск с sudo";
 	}

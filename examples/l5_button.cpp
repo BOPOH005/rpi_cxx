@@ -39,7 +39,7 @@ void button()
 int main (void)
 {
     std::cout << std::unitbuf;
-    std::cout   << "Урок №4 Кнопка" << std::endl
+    std::cout   << "Урок №5 Кнопка" << std::endl
                 << "GPIO 17 -Out->  Диод" << std::endl
                 << "GPIO 18 <-In-   Кнопка" << std::endl
                 << "quit - для завершения" << std::endl;
@@ -56,7 +56,7 @@ int main (void)
         std::cout << "Управление на основе шаблонов" << std::endl;
         button<18,17>();
 	}
-	catch (std::runtime_error err)
+	catch (const std::runtime_error &err)
 	{
 		std::cerr << "Ошибка! Проверте запуск с sudo";
 	}

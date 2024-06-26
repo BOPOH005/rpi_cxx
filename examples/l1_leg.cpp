@@ -33,7 +33,7 @@ void leg_pin(pinN n)
 
 void leg_bcm()
 {
-    auto &gpio=bcm2835::instance().registers();
+    auto &gpio=bcm2835::instance().registers<GPIO>();
     gpio.GPFSEL.fld.p17=mode::out;
 
     for(int i=5; i>0; --i)
@@ -60,7 +60,7 @@ int main (void)
         std::cout << "Управление регистрами" << std::endl;
         leg_bcm();    
 	}
-	catch (std::runtime_error err)
+	catch (const std::runtime_error &err)
 	{
 		std::cerr << "Ошибка! Проверте запуск с sudo";
 	}
