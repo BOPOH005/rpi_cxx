@@ -40,7 +40,7 @@ TEST(PIN, TestSpeed)
     }
 	auto t1_1 = std::chrono::high_resolution_clock::now();
 	
-    auto &regs = bcm2835::instance().registers();
+    auto &regs = bcm2835::instance().registers<GPIO>();
     volatile unsigned *GPFSEL = reinterpret_cast<volatile unsigned *>(&regs.GPFSEL);
 
     auto t2 = std::chrono::high_resolution_clock::now();
@@ -122,7 +122,7 @@ TEST(PIN, testMode)
 	std::cout << pin.getmode() << std::endl;
 	EXPECT_TRUE(pin.getmode() == mode::in);
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -137,7 +137,7 @@ TEST(PIN, bitBlink)
     try
     {
 	bcm2835 &bcm = bcm2835::instance();
-	volatile GPIO &gpio = bcm.registers();
+	volatile GPIO &gpio = bcm.registers<GPIO>();
 	volatile u_int32_t *GPFSEL = reinterpret_cast<volatile u_int32_t *>(&gpio.GPFSEL.fld);
 	volatile u_int32_t *GPSET = reinterpret_cast<volatile u_int32_t *>(&gpio.GPSET.fld);
 	volatile u_int32_t *GPCLR = reinterpret_cast<volatile u_int32_t *>(&gpio.GPCLR.fld);
@@ -160,7 +160,7 @@ TEST(PIN, bitBlink)
 	    EXPECT_FALSE(GPLEV[reg] & (1 << offset));
 	}
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -175,7 +175,7 @@ TEST(PIN, bcmBlink)
     try
     {
 	bcm2835 &bcm = bcm2835::instance();
-	volatile GPIO &gpio = bcm.registers();
+	volatile GPIO &gpio = bcm.registers<GPIO>();
 
 	gpio.GPFSEL.fld.p18 = mode::in;
 	gpio.GPFSEL.fld.p18 = mode::out;
@@ -191,7 +191,7 @@ TEST(PIN, bcmBlink)
 	    EXPECT_TRUE(gpio.GPLEV.fld.p18 == level::low);
 	}
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -217,7 +217,7 @@ TEST(PIN, Blink)
 	    EXPECT_TRUE(p == level::low);
 	}
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -243,7 +243,7 @@ TEST(PIN, pinBlink)
 	    EXPECT_TRUE(p.read() == level::low);
 	}
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }

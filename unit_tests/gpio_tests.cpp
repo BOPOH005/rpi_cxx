@@ -123,7 +123,7 @@ TEST(GPIO_detect, RISING)
 
     bcm.undetect_all(detectmode::RISING);
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error& err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -159,7 +159,7 @@ TEST(GPIO_detect, FALLING)
 
     bcm.undetect_all(detectmode::FALLING);
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -195,7 +195,7 @@ TEST(GPIO_detect, RISING_FALLING)
     
     bcm.undetect_all(detectmode::FALLING | detectmode::RISING);
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -234,7 +234,7 @@ TEST(GPIO_detect, HIGHT)
 
     bcm.undetect_all(detectmode::HIGHT);
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
@@ -273,7 +273,7 @@ TEST(GPIO_detect, LOW)
 
     bcm.undetect_all(detectmode::LOW);
     }
-    catch (std::runtime_error err)
+    catch (const std::runtime_error &err)
     {
 	FAIL() << "Ошибка! Проверте запуск с sudo";
     }
