@@ -1,0 +1,5 @@
+Установить Windows Toolchain for Raspberry Pi
+    http://gnutoolchains.com/raspberry/
+    Предварительно удалить старые версии!
+Установить googletest
+    git clone https://github.com/google/googletest.git
